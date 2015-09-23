@@ -4,8 +4,11 @@ using System.Collections;
 public class bulletMove : MonoBehaviour {
 
 	public float speed;
-	Vector2 vectorMove;
+    public int damage = 10;
+    Transform parent;
+    Vector2 vectorMove;
 	int timetolive = 50;
+
 
 	// Use this for initialization
 	void Start () {
@@ -25,8 +28,15 @@ public class bulletMove : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D coll)
     {
-        coll.gameObject.SendMessage("ApplyDamage", 10, SendMessageOptions.DontRequireReceiver);
-        Destroy(this.gameObject);
+        if (parent == null)
+        {
+            parent = coll.transform;
+        }
+        if (coll.transform != parent)
+        {
+            coll.gameObject.SendMessage("ApplyDamage", damage, SendMessageOptions.DontRequireReceiver);
+            Destroy(this.gameObject);
+        }
     }
 
 }

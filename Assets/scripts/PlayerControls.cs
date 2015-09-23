@@ -8,6 +8,8 @@ public class PlayerControls : MonoBehaviour {
     public Dictionary<string, int> inv;
 
 
+    public int BPdelay = 10;
+    int curBPdelay;
 
     public Vector2 speed = new Vector2(25, 25);
 	
@@ -27,8 +29,10 @@ public class PlayerControls : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         inv = new Dictionary<string, int>();
+        curBPdelay = BPdelay;
     }
-	
+
+
 	// Update is called once per frame
 	void FixedUpdate () {
 
@@ -59,20 +63,25 @@ public class PlayerControls : MonoBehaviour {
 		if ((shootTime % shootInc == 0) && Input.GetMouseButton(0)) {
 			shoot();
 		}
-        if ((shootTime % shootInc == 0) && Input.GetMouseButton(1)) {
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                place("dirt_block", Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            } else {
+        if ((shootTime % shootInc == 0) && Input.GetMouseButton(1) && curBPdelay <= 0) {
+             
                 RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
                 Transform block = hit.transform;
-                if (block != null && block.name.Contains("block"))
+                if (block != null && block.name.Contains("block") && !Input.GetKey(KeyCode.LeftShift))
                 {
                     mine(block);
+                    curBPdelay = BPdelay;
                 }
-            }
+                else if (block == null && Input.GetKey(KeyCode.LeftShift))
+                {
+                    place("dirt_block", Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                    curBPdelay = BPdelay;
+                }
+            
             
 		}
+
+        if (curBPdelay > 0) curBPdelay--;
 		
 		
 	}
@@ -125,6 +134,14 @@ public class PlayerControls : MonoBehaviour {
 
     }
 
+    public void ApplyDamage(int damage)
+    {
+        health -= damage;
+        if (health <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
 
     void OnTriggerEnter2D(Collider2D coll) {
 		//stuff

@@ -2,8 +2,16 @@
 using System.Collections;
 
 public class EnemyControls : MonoBehaviour {
-	
-	public Vector2 speed = new Vector2(25, 25);
+
+
+    //HP
+    public int health = 3000;
+    private int maxHealth;
+    private float healthBarlenght;
+    
+
+
+	public Vector2 speed = new Vector2(10, 10);
 	
 	private Vector2 movement;
 	
@@ -21,8 +29,18 @@ public class EnemyControls : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		
+        maxHealth = health;
+        healthBarlenght = (Screen.width / 6) * (health / (float)maxHealth);
 	}
+
+    void Update()
+    {
+        var dir = GetComponent<Rigidbody2D>().velocity;
+        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        var q = Quaternion.AngleAxis(angle, Vector3.forward);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, q, 100 * Time.deltaTime);
+
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
@@ -50,6 +68,33 @@ public class EnemyControls : MonoBehaviour {
 			var angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
 			transform.rotation = Quaternion.Euler(0, 0, angle-90);
 		}
+
+        //movement
+        
+        
+        if (Vector2.Distance(this.transform.position, target.transform.position) > 2)
+        {
+            //Vector2.MoveTowards(this.transform.position, target.transform.position, .01f);
+            //transform.rotation.SetFromToRotation(this.transform.rotation.eulerAngles, this.transform.rotation.eulerAngles+target.transform.rotation.eulerAngles);
+            //transform.rotation.SetLookRotation(this.transform.rotation.eulerAngles + target.transform.rotation.eulerAngles);
+            
+            movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y));
+            GetComponent<Rigidbody2D>().AddForce(movement);
+            //transform.rotation = Quaternion.SetLookRotation(GetComponent<Rigidbody2D>().velocity);
+        }
+        else
+        {
+            if (GetComponent<Rigidbody2D>().velocity.magnitude > 0 || GetComponent<Rigidbody2D>().velocity.magnitude > 50)
+            {
+                GetComponent<Rigidbody2D>().velocity *= 0.75f;
+            }
+            else
+            {
+                GetComponent<Rigidbody2D>().velocity *= 0;
+            }
+        }
+
+
 		shootTime++;
 		if ((shootTime % shootInc == 0)) {
 			shoot();
@@ -60,7 +105,18 @@ public class EnemyControls : MonoBehaviour {
 		
 		
 	}
-	
+
+
+    public void ApplyDamage(int damage)
+    {
+        health -= damage;
+        healthBarlenght = (Screen.width / 6) * (health / (float)maxHealth);
+        if (health < 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
 	private void shoot(){
 		if(side > 0) {
 			guntoshoot = "Right";
@@ -78,4 +134,12 @@ public class EnemyControls : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D coll) {
 		//stuff
 	}
+
+    void OnGUI () 
+    {
+        Vector2 newPos = Camera.main.WorldToScreenPoint(transform.position);
+        GUI.Box(new Rect(newPos.x - (Screen.width / 12), Screen.height - newPos.y + 80, healthBarlenght, 20), health + "/" + maxHealth);
+    }
+    
+
 }
