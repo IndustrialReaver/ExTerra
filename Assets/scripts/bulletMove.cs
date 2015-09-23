@@ -23,4 +23,10 @@ public class bulletMove : MonoBehaviour {
 
 	}
 
+    void OnTriggerEnter2D(Collider2D coll)
+    {
+        coll.gameObject.SendMessage("ApplyDamage", 10, SendMessageOptions.DontRequireReceiver);
+        Destroy(this.gameObject);
+    }
+
 }
