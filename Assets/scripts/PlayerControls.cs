@@ -11,12 +11,12 @@ public class PlayerControls : MonoBehaviour {
     public int BPdelay = 10;
     int curBPdelay;
 
-    public Vector2 speed = new Vector2(25, 25);
+    public Vector2 speed = new Vector2(10, 10);
 	
 	private Vector2 movement;
 	
 	//public Vector2 topSpeed = new Vector2(5, 5);
-	public float topSpeed = 5.0f;
+	public float topSpeed = 15f;
 	
 	public int shootInc = 2;
 	private int shootTime = 0;
@@ -45,20 +45,30 @@ public class PlayerControls : MonoBehaviour {
 
 
 		if (inputX != 0 && inputY != 0) {
-			movement *= 0.707106781f;
+			movement *= 0.75f;
 		}
 
-		if (GetComponent<Rigidbody2D>().velocity.magnitude >= topSpeed) {
-			GetComponent<Rigidbody2D>().velocity *= 0.99f;
+		if (GetComponent<Rigidbody2D>().velocity.magnitude > topSpeed) {
+			GetComponent<Rigidbody2D>().velocity *= 0.8f;
 		}
 		
 		if(canRotate){
-			Vector3 mouse = Input.mousePosition;
+			//*//
+            Vector3 mouse = Input.mousePosition;
             Vector3 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
             Vector2 offset = new Vector2(mouse.x - screenPoint.x, mouse.y - screenPoint.y);
 			float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
 			transform.rotation = Quaternion.Euler(0, 0, angle-90);
-		}
+            //*/
+
+            /*//
+            Vector2 dir = GetComponent<Rigidbody2D>().velocity;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+            //transform.rotation = Quaternion.RotateTowards(transform.rotation, q, 100 * Time.deltaTime);
+            transform.rotation = Quaternion.Euler(0, 0, q.eulerAngles.z - 90);
+            //*/
+        }
 		shootTime++;
 		if ((shootTime % shootInc == 0) && Input.GetMouseButton(0)) {
 			shoot();

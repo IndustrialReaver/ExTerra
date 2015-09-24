@@ -11,7 +11,7 @@ public class EnemyControls : MonoBehaviour {
     
 
 
-	public Vector2 speed = new Vector2(10, 10);
+	public Vector2 speed = new Vector2(5, 5);
 	
 	private Vector2 movement;
 	
@@ -35,10 +35,11 @@ public class EnemyControls : MonoBehaviour {
 
     void Update()
     {
-        var dir = GetComponent<Rigidbody2D>().velocity;
-        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        var q = Quaternion.AngleAxis(angle, Vector3.forward);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, q, 100 * Time.deltaTime);
+        Vector2 dir = GetComponent<Rigidbody2D>().velocity;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+        //transform.rotation = Quaternion.RotateTowards(transform.rotation, q, 100 * Time.deltaTime);
+        transform.rotation = Quaternion.Euler(0, 0, q.eulerAngles.z - 90);
 
     }
 	
@@ -62,9 +63,9 @@ public class EnemyControls : MonoBehaviour {
 		//}
 		
 		if(canRotate){
-			var mouse = Input.mousePosition;
-			var screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
-			var offset = new Vector2(mouse.x - screenPoint.x, mouse.y - screenPoint.y);
+			Vector2 tarRot = target.transform.position;
+			Vector2 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
+			Vector2 offset = new Vector2(tarRot.x - screenPoint.x, tarRot.y - screenPoint.y);
 			var angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
 			transform.rotation = Quaternion.Euler(0, 0, angle-90);
 		}
@@ -84,7 +85,7 @@ public class EnemyControls : MonoBehaviour {
         }
         else
         {
-            if (GetComponent<Rigidbody2D>().velocity.magnitude > 0 || GetComponent<Rigidbody2D>().velocity.magnitude > 50)
+            if (GetComponent<Rigidbody2D>().velocity.magnitude > 0 || GetComponent<Rigidbody2D>().velocity.magnitude > 10)
             {
                 GetComponent<Rigidbody2D>().velocity *= 0.75f;
             }
