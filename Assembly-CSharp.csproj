@@ -47,7 +47,9 @@
   <ItemGroup>
      <Compile Include="Assets\scripts\Block.cs" />
      <Compile Include="Assets\scripts\CameraControls.cs" />
+     <Compile Include="Assets\scripts\DmgTxt.cs" />
      <Compile Include="Assets\scripts\EnemyControls.cs" />
+     <Compile Include="Assets\scripts\EnemyFighterControls.cs" />
      <Compile Include="Assets\scripts\Gun.cs" />
      <Compile Include="Assets\scripts\MiningLaser.cs" />
      <Compile Include="Assets\scripts\PlayerControls.cs" />

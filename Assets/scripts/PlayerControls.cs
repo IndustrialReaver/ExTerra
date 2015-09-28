@@ -4,14 +4,20 @@ using System.Collections.Generic;
 public class PlayerControls : MonoBehaviour {
 
     //player vars
+
+    //HP
     public int health = 5000;
+    private int maxHealth;
+    private float healthBarlenght;
+
+    //INV
     public Dictionary<string, int> inv;
 
 
     public int BPdelay = 10;
     int curBPdelay;
 
-    public Vector2 speed = new Vector2(10, 10);
+    public Vector2 speed = new Vector2(5, 5);
 	
 	private Vector2 movement;
 	
@@ -30,6 +36,9 @@ public class PlayerControls : MonoBehaviour {
 	void Start () {
         inv = new Dictionary<string, int>();
         curBPdelay = BPdelay;
+
+        maxHealth = health;
+        healthBarlenght = (Screen.width / 2) * (health / (float)maxHealth);
     }
 
 
@@ -41,15 +50,17 @@ public class PlayerControls : MonoBehaviour {
 		
 		movement = new Vector2(speed.x * inputX, speed.y * inputY);
 
-		GetComponent<Rigidbody2D>().AddForce(movement);
-
+        if (GetComponent<Rigidbody2D>().velocity.magnitude < topSpeed)
+        {
+            GetComponent<Rigidbody2D>().AddForce(movement);
+        }
 
 		if (inputX != 0 && inputY != 0) {
 			movement *= 0.75f;
 		}
 
 		if (GetComponent<Rigidbody2D>().velocity.magnitude > topSpeed) {
-			GetComponent<Rigidbody2D>().velocity *= 0.8f;
+			GetComponent<Rigidbody2D>().velocity *= 0.99f;
 		}
 		
 		if(canRotate){
@@ -147,11 +158,21 @@ public class PlayerControls : MonoBehaviour {
     public void ApplyDamage(int damage)
     {
         health -= damage;
+        healthBarlenght = (Screen.width / 2) * (health / (float)maxHealth);
         if (health <= 0)
         {
             Destroy(this.gameObject);
         }
     }
+
+
+    void OnGUI()
+    {
+        Vector2 newPos = new Vector2(Screen.width - (Screen.width / 4), Screen.height);
+        GUI.Box(new Rect(newPos.x - (Screen.width / 2), Screen.height - newPos.y + 80, healthBarlenght, 20), health + "/" + maxHealth);
+        
+    }
+
 
     void OnTriggerEnter2D(Collider2D coll) {
 		//stuff

@@ -87,11 +87,11 @@ public class EnemyControls : MonoBehaviour {
         {
             if (GetComponent<Rigidbody2D>().velocity.magnitude > 0 || GetComponent<Rigidbody2D>().velocity.magnitude > 10)
             {
-                GetComponent<Rigidbody2D>().velocity *= 0.75f;
+                GetComponent<Rigidbody2D>().velocity *= 0.95f;
             }
             else
             {
-                GetComponent<Rigidbody2D>().velocity *= 0;
+                //GetComponent<Rigidbody2D>().velocity *= 0;
             }
         }
 

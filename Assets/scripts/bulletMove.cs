@@ -8,12 +8,12 @@ public class bulletMove : MonoBehaviour {
     Transform parent;
     Vector2 vectorMove;
 	int timetolive = 50;
-
+    
 
 	// Use this for initialization
 	void Start () {
 
-	}
+    }
 
 	// Update is called once per frame
 	void FixedUpdate () {
@@ -35,6 +35,10 @@ public class bulletMove : MonoBehaviour {
         if (coll.transform != parent)
         {
             coll.gameObject.SendMessage("ApplyDamage", damage, SendMessageOptions.DontRequireReceiver);
+            GameObject gui = Instantiate(Resources.Load("DamageText"), Camera.main.WorldToViewportPoint(transform.position), Quaternion.identity) as GameObject;
+            gui.GetComponent<GUIText>().text = damage.ToString();
+
+
             Destroy(this.gameObject);
         }
     }

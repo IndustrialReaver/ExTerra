@@ -47,7 +47,8 @@ public class Gun : MonoBehaviour {
 			var turr = transform.position;
 			var offset = new Vector2(targ.x - turr.x, targ.y - turr.y);
 			var angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.Euler(0, 0, angle-90);
+            angle -= 90;
+            if (canRotate) { transform.rotation = Quaternion.Euler(0, 0, angle); } //else { transform.rotation = GetComponentInParent<Transform>().rotation;  }
 			Instantiate (bullet, transform.position + new Vector3 (0, 0, 1f), transform.rotation);
 			playpew.PlayOneShot (pewpew);
 		}
