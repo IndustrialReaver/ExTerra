@@ -35,6 +35,8 @@ public class bulletMove : MonoBehaviour {
         if (coll.transform != parent)
         {
             coll.gameObject.SendMessage("ApplyDamage", damage, SendMessageOptions.DontRequireReceiver);
+            GameObject ping = Instantiate(Resources.Load("SheildPing"), transform.position, transform.rotation) as GameObject;
+            ping.transform.parent = coll.gameObject.transform;
             GameObject gui = Instantiate(Resources.Load("DamageText"), Camera.main.WorldToViewportPoint(transform.position), Quaternion.identity) as GameObject;
             gui.GetComponent<GUIText>().text = damage.ToString();
 
