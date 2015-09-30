@@ -8,10 +8,10 @@ public class EnemyControls : MonoBehaviour {
     public int health = 3000;
     private int maxHealth;
     private float healthBarlenght;
-    
 
+    public GameObject deathObject;
 
-	public Vector2 speed = new Vector2(5, 5);
+    public Vector2 speed = new Vector2(5, 5);
 	
 	private Vector2 movement;
 	
@@ -114,7 +114,7 @@ public class EnemyControls : MonoBehaviour {
         healthBarlenght = (Screen.width / 6) * (health / (float)maxHealth);
         if (health < 0)
         {
-            Destroy(this.gameObject);
+            Death();
         }
     }
 
@@ -135,6 +135,12 @@ public class EnemyControls : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D coll) {
 		//stuff
 	}
+
+    void Death()
+    {
+        Instantiate(deathObject, transform.position, transform.rotation);
+        Destroy(this.gameObject);
+    }
 
     void OnGUI () 
     {

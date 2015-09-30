@@ -8,7 +8,7 @@ public class EnemyFighterControls : MonoBehaviour {
     private int maxHealth;
     private float healthBarlenght;
 
-
+    public GameObject deathObject;
 
     public Vector2 speed = new Vector2(1f, 2.5f);
 
@@ -119,7 +119,7 @@ public class EnemyFighterControls : MonoBehaviour {
         healthBarlenght = (Screen.width / 6) * (health / (float)maxHealth);
         if (health < 0)
         {
-            Destroy(this.gameObject);
+            Death();
         }
     }
 
@@ -145,6 +145,12 @@ public class EnemyFighterControls : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D coll)
     {
         //stuff
+    }
+
+    void Death()
+    {
+        Instantiate(deathObject, transform.position, transform.rotation);
+        Destroy(this.gameObject);
     }
 
     void OnGUI()

@@ -13,6 +13,7 @@ public class PlayerControls : MonoBehaviour {
     //INV
     public Dictionary<string, int> inv;
 
+    public GameObject deathObject;
 
     public int BPdelay = 10;
     int curBPdelay;
@@ -161,7 +162,7 @@ public class PlayerControls : MonoBehaviour {
         healthBarlenght = (Screen.width / 2) * (health / (float)maxHealth);
         if (health <= 0)
         {
-            Destroy(this.gameObject);
+            Death();
         }
     }
 
@@ -171,6 +172,13 @@ public class PlayerControls : MonoBehaviour {
         Vector2 newPos = new Vector2(Screen.width - (Screen.width / 4), Screen.height);
         GUI.Box(new Rect(newPos.x - (Screen.width / 2), Screen.height - newPos.y + 80, healthBarlenght, 20), health + "/" + maxHealth);
         
+    }
+
+    void Death()
+    {
+        Instantiate(deathObject, transform.position, transform.rotation);
+        Destroy(this.gameObject);
+        Application.LoadLevel("ExTerraMainMenu");
     }
 
 
