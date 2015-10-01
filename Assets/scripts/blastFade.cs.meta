@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: d5cc22c74d9e3c441a6d4b54e1c82159
+timeCreated: 1443729836
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - shard: {fileID: 185258, guid: 5fedf087d5ffc374f81db4ae953799d5, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

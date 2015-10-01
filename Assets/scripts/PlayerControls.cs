@@ -176,9 +176,9 @@ public class PlayerControls : MonoBehaviour {
 
     void Death()
     {
-        Instantiate(deathObject, transform.position, transform.rotation);
+        Instantiate(deathObject, transform.position, Quaternion.EulerAngles(90,0,0));
         Destroy(this.gameObject);
-        Application.LoadLevel("ExTerraMainMenu");
+        //Application.LoadLevel("ExTerraMainMenu");
     }
 
 
