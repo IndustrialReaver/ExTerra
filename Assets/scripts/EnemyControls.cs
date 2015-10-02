@@ -8,8 +8,7 @@ public class EnemyControls : MonoBehaviour {
     public int health = 3000;
     private int maxHealth;
     private float healthBarlenght;
-
-    public GameObject deathObject;
+    
 
     public Vector2 speed = new Vector2(5, 5);
 	
@@ -138,7 +137,7 @@ public class EnemyControls : MonoBehaviour {
 
     void Death()
     {
-        Instantiate(deathObject, transform.position, transform.rotation);
+        Instantiate(death, transform.position, Quaternion.Euler(90, 0, 0));
         Destroy(this.gameObject);
     }
 
