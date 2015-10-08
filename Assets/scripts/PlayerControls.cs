@@ -181,9 +181,10 @@ public class PlayerControls : MonoBehaviour {
         //Application.LoadLevel("ExTerraMainMenu");
     }
 
-    public void Ping(Quaternion p){
-        GameObject ping = Instantiate(Resources.Load("SheildPing"), transform.position, transform.rotation - p) as GameObject;
-            ping.transform.parent = this.transform;
+    public void Ping(Transform p){
+        GameObject ping = Instantiate(Resources.Load("ShieldPing"), transform.position, transform.rotation) as GameObject;
+        ping.transform.parent = this.transform;
+        ping.transform.LookAt(p);
     }
 
     void OnTriggerEnter2D(Collider2D coll) {
