@@ -9,26 +9,32 @@ public class PlayerControls : MonoBehaviour {
     public int health = 5000;
     private int maxHealth;
     private float healthBarlenght;
+    
 
     //INV
+    public UnityEngine.UI.Text[] invDispText = new UnityEngine.UI.Text[5];
+    public UnityEngine.UI.Image[] invDispImg = new UnityEngine.UI.Image[5];
+    public UnityEngine.UI.Image[] invSelectImg = new UnityEngine.UI.Image[5];
     public Dictionary<string, int> inv;
+    private string selectedBlock = "";
+    Color bkgc;
 
+    //DEATH
     public GameObject deathObject;
 
+    //
     public int BPdelay = 10;
     int curBPdelay;
 
+    //MVMNT
     public Vector2 speed = new Vector2(5, 5);
-	
 	private Vector2 movement;
-	
 	//public Vector2 topSpeed = new Vector2(5, 5);
 	public float topSpeed = 15f;
 	
+    //PEWPEW
 	public int shootInc = 2;
 	private int shootTime = 0;
-
-	public GameObject death;
 	public bool canRotate = true;
 	private int side = 1;
 	string guntoshoot;
@@ -40,9 +46,12 @@ public class PlayerControls : MonoBehaviour {
 
         maxHealth = health;
         healthBarlenght = (Screen.width / 2) * (health / (float)maxHealth);
+
+        bkgc = invSelectImg[0].color;
+        updateSel();
+
     }
-
-
+    
 	// Update is called once per frame
 	void FixedUpdate () {
 
@@ -94,19 +103,39 @@ public class PlayerControls : MonoBehaviour {
                     mine(block);
                     curBPdelay = BPdelay;
                 }
-                else if (block == null && Input.GetKey(KeyCode.LeftShift))
+                else if (block == null && Input.GetKey(KeyCode.LeftShift) && selectedBlock != "")
                 {
-                    place("dirt_block", Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                    place(selectedBlock, Camera.main.ScreenToWorldPoint(Input.mousePosition));
                     curBPdelay = BPdelay;
                 }
-            
             
 		}
 
         if (curBPdelay > 0) curBPdelay--;
-		
-		
-	}
+
+        updateInv();
+        if (Input.GetKeyDown(KeyCode.Alpha1) && inv.Keys.Count > 0)
+        {
+            updateSel(0);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && inv.Keys.Count > 1)
+        {
+            updateSel(1);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && inv.Keys.Count > 2)
+        {
+            updateSel(2);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4) && inv.Keys.Count > 3)
+        {
+            updateSel(3);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha5) && inv.Keys.Count > 4)
+        {
+            updateSel(4);
+        }
+
+    }
 
 	private void shoot(){
 		if(side > 0) {
@@ -118,7 +147,42 @@ public class PlayerControls : MonoBehaviour {
 		side *= -1;
 	}
 
-	private void mine(Transform block)
+    private void updateSel()
+    {
+        foreach (UnityEngine.UI.Image i in invSelectImg)
+        {
+            i.color = bkgc;
+        }
+    }
+
+    private void updateSel(int n)
+    {
+        updateSel();
+        invSelectImg[n].color = Color.cyan;
+        selectedBlock = invDispText[n].text.Substring(0, invDispText[n].text.IndexOf(':'));
+    }
+
+    private void updateInv()
+    {
+        
+        string[] invItems = new string[inv.Keys.Count];
+        inv.Keys.CopyTo(invItems, 0);
+
+        for (int i = 0; i < 5; i++)
+        {
+            if(invItems.Length > i && invItems[i] != null && inv[invItems[i]] > 0)
+            {
+                invDispText[i].text = invItems[i] + ": " + inv[invItems[i]];
+                invDispImg[i].sprite = Resources.Load<Sprite>("images/" + invItems[i]);
+            } else
+            {
+                invDispText[i].text = "";
+                invDispImg[i].sprite = Resources.Load<Sprite>("images/blank_block");
+            }
+        }
+    }
+
+    private void mine(Transform block)
     {
         Debug.Log("PlayerControls::mine -- block: " + block.name);
         transform.BroadcastMessage ("Mine", SendMessageOptions.DontRequireReceiver);
@@ -144,11 +208,17 @@ public class PlayerControls : MonoBehaviour {
         //check inv
         if (inv.ContainsKey(block))
         {
-            if (inv[block] >= 1)
+            if (inv[selectedBlock] >= 1)
             {
-                inv[block] -= 1;
-                GameObject placedBlock = Instantiate(Resources.Load(block), pos, new Quaternion()) as GameObject;
-                placedBlock.name = block;
+                inv[selectedBlock] -= 1;
+                GameObject placedBlock = Instantiate(Resources.Load(selectedBlock), pos, new Quaternion()) as GameObject;
+                placedBlock.name = selectedBlock;
+                if (inv[selectedBlock] < 1)
+                {
+                    updateSel();
+                    inv.Remove(selectedBlock);
+                    selectedBlock = "";
+                }
             }
         }
 
@@ -165,7 +235,6 @@ public class PlayerControls : MonoBehaviour {
             Death();
         }
     }
-
 
     void OnGUI()
     {
