@@ -95,7 +95,8 @@ public class PlayerControls : MonoBehaviour {
 			shoot();
 		}
         if ((shootTime % shootInc == 0) && Input.GetMouseButton(1) && curBPdelay <= 0) {
-             
+
+                //transform.BroadcastMessage("Mine", SendMessageOptions.DontRequireReceiver);
                 RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
                 Transform block = hit.transform;
                 if (block != null && block.name.Contains("block") && !Input.GetKey(KeyCode.LeftShift))
@@ -110,6 +111,15 @@ public class PlayerControls : MonoBehaviour {
                 }
             
 		}
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            transform.BroadcastMessage("Place", SendMessageOptions.DontRequireReceiver);
+        }
+        else if (Input.GetMouseButton(1))
+        {
+            transform.BroadcastMessage("Mine", SendMessageOptions.DontRequireReceiver);
+        }
 
         if (curBPdelay > 0) curBPdelay--;
 
@@ -185,7 +195,7 @@ public class PlayerControls : MonoBehaviour {
     private void mine(Transform block)
     {
         Debug.Log("PlayerControls::mine -- block: " + block.name);
-        transform.BroadcastMessage ("Mine", SendMessageOptions.DontRequireReceiver);
+        //transform.BroadcastMessage ("Mine", SendMessageOptions.DontRequireReceiver);
 
         //check inv
         if (inv.ContainsKey(block.name))
