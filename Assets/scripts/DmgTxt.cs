@@ -10,7 +10,7 @@ public class DmgTxt : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        GetComponent<GUIText>().material.color = color; // set text color
+        GetComponent<GUIText>().material.color = color;
         alpha = 1;
     }
 	
@@ -24,7 +24,7 @@ public class DmgTxt : MonoBehaviour {
         }
         else
         {
-            Destroy(gameObject); // text vanished - destroy itself
+            Destroy(gameObject);
         }
     }
 }
