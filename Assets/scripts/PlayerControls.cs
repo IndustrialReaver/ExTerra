@@ -10,14 +10,8 @@ public class PlayerControls : MonoBehaviour {
     private int maxHealth;
     private float healthBarlenght;
     
-
     //INV
-    public UnityEngine.UI.Text[] invDispText = new UnityEngine.UI.Text[5];
-    public UnityEngine.UI.Image[] invDispImg = new UnityEngine.UI.Image[5];
-    public UnityEngine.UI.Image[] invSelectImg = new UnityEngine.UI.Image[5];
-    public Dictionary<string, int> inv;
-    private string selectedBlock = "";
-    Color bkgc;
+    private Inventory inv;
 
     //DEATH
     public GameObject deathObject;
@@ -41,15 +35,10 @@ public class PlayerControls : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        inv = new Dictionary<string, int>();
         curBPdelay = BPdelay;
-
         maxHealth = health;
         healthBarlenght = (Screen.width / 2) * (health / (float)maxHealth);
-
-        bkgc = invSelectImg[0].color;
-        updateSel();
-
+        inv = transform.GetComponent<Inventory>();
     }
     
 	// Update is called once per frame
@@ -80,16 +69,8 @@ public class PlayerControls : MonoBehaviour {
             Vector2 offset = new Vector2(mouse.x - screenPoint.x, mouse.y - screenPoint.y);
 			float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
 			transform.rotation = Quaternion.Euler(0, 0, angle-90);
-            //*/
-
-            /*//
-            Vector2 dir = GetComponent<Rigidbody2D>().velocity;
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-            //transform.rotation = Quaternion.RotateTowards(transform.rotation, q, 100 * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(0, 0, q.eulerAngles.z - 90);
-            //*/
         }
+
 		shootTime++;
 		if ((shootTime % shootInc == 0) && Input.GetMouseButton(0)) {
 			shoot();
@@ -104,9 +85,9 @@ public class PlayerControls : MonoBehaviour {
                     mine(block);
                     curBPdelay = BPdelay;
                 }
-                else if (block == null && Input.GetKey(KeyCode.LeftShift) && selectedBlock != "")
+                else if (block == null && Input.GetKey(KeyCode.LeftShift) && inv.GetSelected() != null)
                 {
-                    place(selectedBlock, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                    place(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                     curBPdelay = BPdelay;
                 }
             
@@ -123,28 +104,6 @@ public class PlayerControls : MonoBehaviour {
 
         if (curBPdelay > 0) curBPdelay--;
 
-        updateInv();
-        if (Input.GetKeyDown(KeyCode.Alpha1) && inv.Keys.Count > 0)
-        {
-            updateSel(0);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && inv.Keys.Count > 1)
-        {
-            updateSel(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && inv.Keys.Count > 2)
-        {
-            updateSel(2);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4) && inv.Keys.Count > 3)
-        {
-            updateSel(3);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha5) && inv.Keys.Count > 4)
-        {
-            updateSel(4);
-        }
-
     }
 
 	private void shoot(){
@@ -157,83 +116,26 @@ public class PlayerControls : MonoBehaviour {
 		side *= -1;
 	}
 
-    private void updateSel()
-    {
-        foreach (UnityEngine.UI.Image i in invSelectImg)
-        {
-            i.color = bkgc;
-        }
-    }
-
-    private void updateSel(int n)
-    {
-        updateSel();
-        invSelectImg[n].color = Color.cyan;
-        selectedBlock = invDispText[n].text.Substring(0, invDispText[n].text.IndexOf(':'));
-    }
-
-    private void updateInv()
-    {
-        
-        string[] invItems = new string[inv.Keys.Count];
-        inv.Keys.CopyTo(invItems, 0);
-
-        for (int i = 0; i < 5; i++)
-        {
-            if(invItems.Length > i && invItems[i] != null && inv[invItems[i]] > 0)
-            {
-                invDispText[i].text = invItems[i] + ": " + inv[invItems[i]];
-                invDispImg[i].sprite = Resources.Load<Sprite>("images/" + invItems[i]);
-            } else
-            {
-                invDispText[i].text = "";
-                invDispImg[i].sprite = Resources.Load<Sprite>("images/blank_block");
-            }
-        }
-    }
 
     private void mine(Transform block)
     {
         Debug.Log("PlayerControls::mine -- block: " + block.name);
-        //transform.BroadcastMessage ("Mine", SendMessageOptions.DontRequireReceiver);
 
-        //check inv
-        if (inv.ContainsKey(block.name))
+        //try and add to inventory
+        if (inv.Add(block.gameObject))
         {
-            inv[block.name] += 1;
-        } else
-        {
-            inv.Add(block.name, 1);
+            Destroy(block.gameObject);
         }
-
-
-        Destroy(block.gameObject);
     }
 
-    private void place(string block, Vector2 pos)
+    private void place(Vector2 pos)
     {
-        Debug.Log("PlayerControls::place -- block: " + block);
+        Debug.Log("PlayerControls::place -- block: " + inv.GetSelected());
         transform.BroadcastMessage("Mine", SendMessageOptions.DontRequireReceiver);
 
-        //check inv
-        if (inv.ContainsKey(block))
-        {
-            if (inv[selectedBlock] >= 1)
-            {
-                inv[selectedBlock] -= 1;
-                GameObject placedBlock = Instantiate(Resources.Load(selectedBlock), pos, new Quaternion()) as GameObject;
-                placedBlock.name = selectedBlock;
-                if (inv[selectedBlock] < 1)
-                {
-                    updateSel();
-                    inv.Remove(selectedBlock);
-                    selectedBlock = "";
-                }
-            }
-        }
-
-        
-
+        GameObject placedBlock = Instantiate(inv.PlaceSelected(), pos, new Quaternion()) as GameObject;
+        placedBlock.name = inv.GetSelected().name;
+              
     }
 
     public void ApplyDamage(int damage)

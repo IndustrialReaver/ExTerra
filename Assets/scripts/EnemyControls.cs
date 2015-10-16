@@ -60,8 +60,28 @@ public class EnemyControls : MonoBehaviour {
 		//if (GetComponent<Rigidbody2D>().velocity.magnitude <= topSpeed) {
 			//GetComponent<Rigidbody2D>().velocity *= 0.99f;
 		//}
-		
-		if(canRotate){
+
+        if (target != null && Vector2.Distance(transform.position, target.transform.position) > 10)
+        {
+            target = null;
+        }
+
+        if (target == null)
+        {
+            RaycastHit2D[] search;
+            search = Physics2D.CircleCastAll(transform.position, 10, Vector2.zero);
+
+            foreach(RaycastHit2D n in search){
+                if (n.transform.tag == "Player")
+                {
+                    target = n.transform.gameObject;
+                }
+            }
+
+        }
+
+        if (canRotate && target != null)
+        {
 			Vector2 tarRot = target.transform.position;
 			Vector2 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
 			Vector2 offset = new Vector2(tarRot.x - screenPoint.x, tarRot.y - screenPoint.y);
@@ -72,7 +92,7 @@ public class EnemyControls : MonoBehaviour {
         //movement
         
         
-        if (Vector2.Distance(this.transform.position, target.transform.position) > 2)
+        if (target != null && Vector2.Distance(this.transform.position, target.transform.position) > 2)
         {
             //Vector2.MoveTowards(this.transform.position, target.transform.position, .01f);
             //transform.rotation.SetFromToRotation(this.transform.rotation.eulerAngles, this.transform.rotation.eulerAngles+target.transform.rotation.eulerAngles);
@@ -84,25 +104,22 @@ public class EnemyControls : MonoBehaviour {
         }
         else
         {
-            if (GetComponent<Rigidbody2D>().velocity.magnitude > 0 || GetComponent<Rigidbody2D>().velocity.magnitude > 10)
+            if (GetComponent<Rigidbody2D>().velocity.magnitude < 1 || GetComponent<Rigidbody2D>().velocity.magnitude > 10)
             {
-                GetComponent<Rigidbody2D>().velocity *= 0.95f;
+                GetComponent<Rigidbody2D>().velocity *= 0.75f;
             }
             else
             {
-                //GetComponent<Rigidbody2D>().velocity *= 0;
+                GetComponent<Rigidbody2D>().velocity *= 0;
             }
         }
 
 
 		shootTime++;
-		if ((shootTime % shootInc == 0)) {
+        if ((shootTime % shootInc == 0) && target != null && Vector2.Distance(this.transform.position, target.transform.position) < 8)
+        {
 			shoot();
 		}
-		if ((shootTime % shootInc == 0) && Input.GetMouseButton(1)) {
-			mine();
-		}
-		
 		
 	}
 
@@ -125,10 +142,6 @@ public class EnemyControls : MonoBehaviour {
 		}
 		transform.BroadcastMessage ("EnemyFire", target, SendMessageOptions.DontRequireReceiver);
 		side *= -1;
-	}
-	
-	private void mine(){
-		transform.BroadcastMessage ("Mine", SendMessageOptions.DontRequireReceiver);
 	}
 	
 	void OnTriggerEnter2D(Collider2D coll) {

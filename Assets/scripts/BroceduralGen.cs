@@ -6,22 +6,12 @@ public class BroceduralGen : MonoBehaviour {
     public float radius = 1f;
 
     byte[,] blocks;
-    GameObject Dirt;
-    GameObject Stone;
-    GameObject Water;
-    GameObject Grass;
+    GameObject[] placeables;
 
-    // Use this for initialization
-    void Start () {
-        GeneratePlanet();
-    }
-	
+
     public void GeneratePlanet()
     {
-        Dirt = Resources.Load<GameObject>("dirt_block");
-        Stone = Resources.Load<GameObject>("stone_block");
-        Water = Resources.Load<GameObject>("water_block");
-        Grass = Resources.Load<GameObject>("grass_block");
+        placeables = Camera.main.GetComponent<GameManager>().blocks;
 
         GenTerrain();
 
@@ -34,30 +24,9 @@ public class BroceduralGen : MonoBehaviour {
                 Vector2 center = new Vector2(transform.position.x, transform.position.y);
                 if (Vector2.Distance(center, newpos) <= radius)
                 {
-                    if (blocks[i, j] == 0)
-                    {
-                        newblock = Instantiate(Water, newpos, Quaternion.identity) as GameObject;
-                        newblock.name = "water_block";
-                        newblock.transform.parent = transform;
-                    }
-                    else if (blocks[i, j] == 1)
-                    {
-                        newblock = Instantiate(Stone, newpos, Quaternion.identity) as GameObject;
-                        newblock.name = "stone_block";
-                        newblock.transform.parent = transform;
-                    }
-                    else if (blocks[i, j] == 2)
-                    {
-                        newblock = Instantiate(Dirt, newpos, Quaternion.identity) as GameObject;
-                        newblock.name = "dirt_block";
-                        newblock.transform.parent = transform;
-                    }
-                    else if (blocks[i, j] == 3)
-                    {
-                        newblock = Instantiate(Grass, newpos, Quaternion.identity) as GameObject;
-                        newblock.name = "grass_block";
-                        newblock.transform.parent = transform;
-                    }
+                    newblock = Instantiate(placeables[blocks[i, j]], newpos, Quaternion.identity) as GameObject;
+                    newblock.name = placeables[blocks[i, j]].name;
+                    newblock.transform.parent = transform;
                 }
             }
         }
@@ -94,16 +63,15 @@ public class BroceduralGen : MonoBehaviour {
                 {
                     blocks[px, py] = 0;
 
-                    //The next three lines make dirt spots in random places
+                    
                     if (Noise(px, py, 12, 16, 1) > 10)
                     {
                         blocks[px, py] = 3;
-
                     }
 
-                    //The next three lines remove dirt and rock to make caves in certain places
+                    
                     if (Noise(px, py * 2, 16, 14, 1) > 10)
-                    { //Caves
+                    { 
                         blocks[px, py] = 1;
 
                     }

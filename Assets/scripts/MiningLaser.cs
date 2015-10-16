@@ -3,7 +3,6 @@ using System.Collections;
 
 public class MiningLaser : MonoBehaviour {
 
-    bool isOff = true;
     int timer = 2;
     LineRenderer line;
 
