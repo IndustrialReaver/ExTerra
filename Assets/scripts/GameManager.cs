@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour {
     public byte[,] grid = new byte[10,10];
     public GameObject[] blocks;
 
+    ArrayList gameobjects = new ArrayList();
+    Vector2 oldplayerpos;
     GameObject player;
     GameObject enemy;
 
@@ -36,12 +38,14 @@ public class GameManager : MonoBehaviour {
                         GameObject planet = Instantiate(Resources.Load("Planet"), new Vector2(x, y), Quaternion.identity) as GameObject;
                         planet.GetComponent<BroceduralGen>().GeneratePlanet();
                         planet.name = "Planet_" + Mathf.Abs(x) + "" + Mathf.Abs(y);
+                        gameobjects.Add(planet);
                     }
                     else if (chance > 0.8)
                     {
                         x -= Random.Range(0, 100);
                         y -= Random.Range(0, 100);
-                        Instantiate(enemy, new Vector2(x, y), Quaternion.identity);
+                        GameObject newenemy = Instantiate(enemy, new Vector2(x, y), Quaternion.identity) as GameObject;
+                        gameobjects.Add(newenemy);
                     }
                 }
             }
@@ -50,11 +54,28 @@ public class GameManager : MonoBehaviour {
         player = Instantiate(Resources.Load("Player"), Vector3.zero, Quaternion.identity) as GameObject;
         player.GetComponent<Inventory>().Init();
         GetComponent<CameraControls>().player = player;
+        oldplayerpos = player.transform.position;
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+	    
+        if (!oldplayerpos.Equals(player.transform.position))
+        {
+            foreach (GameObject g in gameobjects)
+            {
+                if (Vector2.Distance(g.transform.position, player.transform.position) > 150)
+                {
+                    g.SetActive(false);
+                }
+                else
+                {
+                    g.SetActive(true);
+                }
+            }
+        }
+        
+        oldplayerpos = player.transform.position;
 	}
 }
