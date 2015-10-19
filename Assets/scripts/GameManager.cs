@@ -78,4 +78,12 @@ public class GameManager : MonoBehaviour {
         
         oldplayerpos = player.transform.position;
 	}
+
+    public void destroyed(GameObject o)
+    {
+        if (gameobjects.Contains(o))
+        {
+            gameobjects.Remove(o);
+        }
+    }
 }

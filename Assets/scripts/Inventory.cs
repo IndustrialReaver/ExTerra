@@ -105,6 +105,31 @@ public class Inventory : MonoBehaviour {
     }
 
     /// <summary>
+    /// Adds The GameObject to the inventory at the specified x and y
+    /// </summary>
+    /// <param name="b">The GameObject to add</param>
+    /// <param name="x">The x position in the inventory</param>
+    /// <param name="y">The y position in the inventory</param>
+    /// <returns>returns true if added, false if inventory is full</returns>
+    public bool Add(GameObject b, int x, int y)
+    {
+        if (!full)
+        {
+            if (inventory[x, y] == null)
+            {
+                inventory[x, y] = b;
+                invAct[b.name] += 1;
+                return true;
+            }
+            return false;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Returns the Game object that is currently selected in the inventory, without removing it.
     /// </summary>
     /// <returns>Currently selected inventory space</returns>

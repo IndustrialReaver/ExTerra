@@ -8,17 +8,19 @@ public class EnemyControls : MonoBehaviour {
     public int health = 3000;
     private int maxHealth;
     private float healthBarlenght;
-    
+
+    //SEEKING
+    public int seekDistance = 10;
+    public int fireDistance = 8;
 
     public Vector2 speed = new Vector2(5, 5);
+    public float topSpeed = 5.0f;
+
+    private Vector2 movement;
 	
-	private Vector2 movement;
-	
-	//public Vector2 topSpeed = new Vector2(5, 5);
-	public float topSpeed = 5.0f;
 	
 	public int shootInc = 2;
-	private int shootTime = 0;
+    private int tshootInc;
 
 	public GameObject target;
 	public GameObject death;
@@ -29,6 +31,7 @@ public class EnemyControls : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         maxHealth = health;
+        tshootInc = shootInc;
         healthBarlenght = (Screen.width / 6) * (health / (float)maxHealth);
 	}
 
@@ -37,29 +40,11 @@ public class EnemyControls : MonoBehaviour {
         Vector2 dir = GetComponent<Rigidbody2D>().velocity;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-        //transform.rotation = Quaternion.RotateTowards(transform.rotation, q, 100 * Time.deltaTime);
         transform.rotation = Quaternion.Euler(0, 0, q.eulerAngles.z - 90);
-
     }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		
-		//float inputX = Input.GetAxis("Horizontal");
-		//float inputY = Input.GetAxis("Vertical");
-		
-		//movement = new Vector2(speed.x * inputX, speed.y * inputY);
-		
-		//GetComponent<Rigidbody2D>().AddForce(movement);
-		
-		
-		//if (inputX != 0 && inputY != 0) {
-			//movement *= 0.707106781f;
-		//}
-		
-		//if (GetComponent<Rigidbody2D>().velocity.magnitude <= topSpeed) {
-			//GetComponent<Rigidbody2D>().velocity *= 0.99f;
-		//}
 
         if (target != null && Vector2.Distance(transform.position, target.transform.position) > 10)
         {
@@ -69,7 +54,7 @@ public class EnemyControls : MonoBehaviour {
         if (target == null)
         {
             RaycastHit2D[] search;
-            search = Physics2D.CircleCastAll(transform.position, 10, Vector2.zero);
+            search = Physics2D.CircleCastAll(transform.position, seekDistance, Vector2.zero);
 
             foreach(RaycastHit2D n in search){
                 if (n.transform.tag == "Player")
@@ -94,17 +79,12 @@ public class EnemyControls : MonoBehaviour {
         
         if (target != null && Vector2.Distance(this.transform.position, target.transform.position) > 2)
         {
-            //Vector2.MoveTowards(this.transform.position, target.transform.position, .01f);
-            //transform.rotation.SetFromToRotation(this.transform.rotation.eulerAngles, this.transform.rotation.eulerAngles+target.transform.rotation.eulerAngles);
-            //transform.rotation.SetLookRotation(this.transform.rotation.eulerAngles + target.transform.rotation.eulerAngles);
-            
             movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y));
             GetComponent<Rigidbody2D>().AddForce(movement);
-            //transform.rotation = Quaternion.SetLookRotation(GetComponent<Rigidbody2D>().velocity);
         }
         else
         {
-            if (GetComponent<Rigidbody2D>().velocity.magnitude < 1 || GetComponent<Rigidbody2D>().velocity.magnitude > 10)
+            if (GetComponent<Rigidbody2D>().velocity.magnitude < 1 || GetComponent<Rigidbody2D>().velocity.magnitude > topSpeed)
             {
                 GetComponent<Rigidbody2D>().velocity *= 0.75f;
             }
@@ -114,15 +94,17 @@ public class EnemyControls : MonoBehaviour {
             }
         }
 
-
-		shootTime++;
-        if ((shootTime % shootInc == 0) && target != null && Vector2.Distance(this.transform.position, target.transform.position) < 8)
+        if (shootInc > 0)
+        {
+            shootInc--;
+        }
+        if ((shootInc <= 0) && target != null && Vector2.Distance(this.transform.position, target.transform.position) < fireDistance)
         {
 			shoot();
+            shootInc = tshootInc;
 		}
 		
 	}
-
 
     public void ApplyDamage(int damage)
     {
@@ -143,13 +125,10 @@ public class EnemyControls : MonoBehaviour {
 		transform.BroadcastMessage ("EnemyFire", target, SendMessageOptions.DontRequireReceiver);
 		side *= -1;
 	}
-	
-	void OnTriggerEnter2D(Collider2D coll) {
-		//stuff
-	}
 
     void Death()
     {
+        Camera.main.GetComponent<GameManager>().destroyed(transform.gameObject);
         Instantiate(death, transform.position, Quaternion.Euler(90, 0, 0));
         Destroy(this.gameObject);
     }
