@@ -27,6 +27,11 @@ public class MainMenu : MonoBehaviour
         Application.LoadLevel("ExTerraStaging");
     }
 
+    public void MM()
+    {
+        Application.LoadLevel("ExTerraMainMenu");
+    }
+
     public void LoadGame()
     {
 
@@ -34,6 +39,6 @@ public class MainMenu : MonoBehaviour
 
     public void About()
     {
-
+        Application.LoadLevel("ExTerraAbout");
     }
 }
