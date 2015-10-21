@@ -5,6 +5,9 @@ public class PlayerControls : MonoBehaviour {
 
     //player vars
 
+    //GM
+    GameManager gm;
+
     //HP
     public int health = 5000;
     private int maxHealth;
@@ -22,8 +25,8 @@ public class PlayerControls : MonoBehaviour {
 
     //MVMNT
     public Vector2 speed = new Vector2(5, 5);
-	private Vector2 movement;
-	//public Vector2 topSpeed = new Vector2(5, 5);
+	private Vector2 movementX;
+    private Vector2 movementY;
 	public float topSpeed = 15f;
 	
     //PEWPEW
@@ -35,6 +38,7 @@ public class PlayerControls : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        gm = Camera.main.GetComponent<GameManager>();
         curBPdelay = BPdelay;
         maxHealth = health;
         healthBarlenght = (Screen.width / 2) * (health / (float)maxHealth);
@@ -44,26 +48,30 @@ public class PlayerControls : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-		float inputX = Input.GetAxis("Horizontal");
-		float inputY = Input.GetAxis("Vertical");
-		
-		movement = new Vector2(speed.x * inputX, speed.y * inputY);
+		float inputY = Input.GetAxis("Horizontal");
+		float inputX = Input.GetAxis("Vertical");
+        
+        movementX += (Vector2)transform.up * (speed.x * inputX);
+
 
         if (GetComponent<Rigidbody2D>().velocity.magnitude < topSpeed)
         {
-            GetComponent<Rigidbody2D>().AddForce(movement);
+            GetComponent<Rigidbody2D>().AddForce(movementX);
         }
 
-		if (inputX != 0 && inputY != 0) {
-			movement *= 0.75f;
+		if (inputX == 0) {
+			movementX *= 0.75f;
 		}
 
 		if (GetComponent<Rigidbody2D>().velocity.magnitude > topSpeed) {
 			GetComponent<Rigidbody2D>().velocity *= 0.99f;
 		}
+
+        //********************************************************************
+        //********************************************************************
+        //********************************************************************
 		
 		if(canRotate){
-			//*//
             Vector3 mouse = Input.mousePosition;
             Vector3 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
             Vector2 offset = new Vector2(mouse.x - screenPoint.x, mouse.y - screenPoint.y);
@@ -76,8 +84,6 @@ public class PlayerControls : MonoBehaviour {
 			shoot();
 		}
         if ((shootTime % shootInc == 0) && Input.GetMouseButton(1) && curBPdelay <= 0) {
-
-                //transform.BroadcastMessage("Mine", SendMessageOptions.DontRequireReceiver);
                 RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
                 Transform block = hit.transform;
                 if (block != null && block.name.Contains("block") && !Input.GetKey(KeyCode.LeftShift))
@@ -85,7 +91,7 @@ public class PlayerControls : MonoBehaviour {
                     mine(block);
                     curBPdelay = BPdelay;
                 }
-                else if (block == null && Input.GetKey(KeyCode.LeftShift) && inv.GetSelected() != null)
+                else if (block == null && Input.GetKey(KeyCode.LeftShift) )//&& inv.GetSelected() != null)
                 {
                     place(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                     curBPdelay = BPdelay;
@@ -130,12 +136,10 @@ public class PlayerControls : MonoBehaviour {
 
     private void place(Vector2 pos)
     {
-        Debug.Log("PlayerControls::place -- block: " + inv.GetSelected());
-        transform.BroadcastMessage("Mine", SendMessageOptions.DontRequireReceiver);
-
-        GameObject placedBlock = Instantiate(inv.PlaceSelected(), pos, new Quaternion()) as GameObject;
-        placedBlock.name = inv.GetSelected().name;
-              
+        Debug.Log("PlayerControls::place -- block: " + inv.GetSelected().name);
+        //transform.BroadcastMessage("Mine", SendMessageOptions.DontRequireReceiver);
+        GameObject placedBlock = Instantiate(Resources.Load<GameObject>("inv.PlaceSelected().name"), pos, new Quaternion()) as GameObject;
+        placedBlock.name = inv.GetSelected().name;  
     }
 
     public void ApplyDamage(int damage)

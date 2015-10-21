@@ -21,6 +21,7 @@ public class MMship : MonoBehaviour {
         if ((!this.GetComponent<Renderer>().isVisible) && screenoffset)
         {
             pos.x *= -1;
+            pos.x -= Random.Range(0,2);
             transform.position = pos;
             screenoffset = false;
         }

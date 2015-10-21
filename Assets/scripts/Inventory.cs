@@ -22,7 +22,7 @@ public class Inventory : MonoBehaviour {
     bool full = false;
 
     //pointer to currently selected inventory space
-    private Vector2 pointer = new Vector2(0,0);
+    public Vector2 pointer = new Vector2(0,0);
 
     //color of selector
     Color bkgc;
@@ -30,31 +30,29 @@ public class Inventory : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        invAct = new Dictionary<string, int>();
-        //bkgc = invSelectImg[0].color;
-        //updateSel();
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
         //updateInv();
-        if (Input.GetKeyDown(KeyCode.Alpha1) && invAct.Keys.Count > 0)
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             updateSel(0);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && invAct.Keys.Count > 1)
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             updateSel(1);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && invAct.Keys.Count > 2)
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             updateSel(2);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha4) && invAct.Keys.Count > 3)
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             updateSel(3);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha5) && invAct.Keys.Count > 4)
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             updateSel(4);
         }
@@ -73,6 +71,16 @@ public class Inventory : MonoBehaviour {
         {
             invAct.Add(temp[i].name, 0);
         }
+        
+        for (int i = 0; i < inventory.GetLength(0); i++)
+        {
+            for (int j = 0; j < inventory.GetLength(1); j++)
+            {
+                inventory[i, j] = null;
+            }
+        }
+
+        updateInv();
     }
     
     /// <summary>
@@ -91,7 +99,15 @@ public class Inventory : MonoBehaviour {
                     if (inventory[i, j] == null)
                     {
                         inventory[i, j] = b;
-                        invAct[b.name] += 1;
+                        if (invAct.ContainsKey(b.name))
+                        {
+                            invAct[b.name] += 1;
+                        }
+                        else
+                        {
+                            invAct.Add(b.name, 1);
+                        }
+                        Debug.Log("Inventory::Add -- added: " + b.name + " to [" + i + ", " + j + " ]");
                         return true;
                     }
                 }
@@ -118,7 +134,14 @@ public class Inventory : MonoBehaviour {
             if (inventory[x, y] == null)
             {
                 inventory[x, y] = b;
-                invAct[b.name] += 1;
+                if (invAct.ContainsKey(b.name))
+                {
+                    invAct[b.name] += 1;
+                }
+                else
+                {
+                    invAct.Add(b.name, 1);
+                }
                 return true;
             }
             return false;
@@ -156,7 +179,6 @@ public class Inventory : MonoBehaviour {
 
 
 
-
     private void updateSel()
     {
         foreach (UnityEngine.UI.Image i in invSelectImg)
@@ -167,30 +189,32 @@ public class Inventory : MonoBehaviour {
 
     private void updateSel(int n)
     {
-        updateSel();
-        invSelectImg[n].color = Color.cyan;
+        //updateSel();
+        //invSelectImg[n].color = Color.cyan;
         //selectedBlock = invDispText[n].text.Substring(0, invDispText[n].text.IndexOf(':'));
+        pointer = new Vector2(n,0);
     }
+
+
+
+
+
 
     private void updateInv()
     {
-
-        string[] invItems = new string[invAct.Keys.Count];
-        invAct.Keys.CopyTo(invItems, 0);
-
-        for (int i = 0; i < 5; i++)
+        bool tfull = true;
+        for (int i = 0; i < inventory.GetLength(0); i++)
         {
-            if (invItems.Length > i && invItems[i] != null && invAct[invItems[i]] > 0)
+            for (int j = 0; j < inventory.GetLength(1); j++)
             {
-                invDispText[i].text = invItems[i] + ": " + invAct[invItems[i]];
-                invDispImg[i].sprite = Resources.Load<Sprite>("images/" + invItems[i]);
-            }
-            else
-            {
-                invDispText[i].text = "";
-                invDispImg[i].sprite = Resources.Load<Sprite>("images/blank_block");
+                if (inventory[i, j] == null)
+                {
+                    tfull = false;
+                }
             }
         }
+
+        full = tfull;
     }
 
 }

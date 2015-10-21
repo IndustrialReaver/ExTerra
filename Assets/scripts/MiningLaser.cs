@@ -36,26 +36,20 @@ public class MiningLaser : MonoBehaviour {
 	public void Mine(){
         line.enabled = true;
         timer = 4;
-		//Physics2D.Linecast ((Vector2)transform.position, (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        line.SetColors(SM, FM);
+		line.SetColors(SM, FM);
         line.SetPosition(0, Camera.main.ScreenToWorldPoint(Input.mousePosition));
         line.SetPosition(1, transform.position);
-		//Debug.DrawLine (transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
 		Debug.Log("MiningLaser::Mine -- mining... ");
-		//Gizmos.color = Color.yellow;
-		//Gizmos.DrawLine (transform.position, Input.mousePosition);
 	}
+
+
     public void Place()
     {
         line.enabled = true;
         timer = 4;
-        //Physics2D.Linecast ((Vector2)transform.position, (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition));
         line.SetColors(SP, FP);
         line.SetPosition(0, Camera.main.ScreenToWorldPoint(Input.mousePosition));
         line.SetPosition(1, transform.position);
-        //Debug.DrawLine (transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        Debug.Log("MiningLaser::Mine -- mining... ");
-        //Gizmos.color = Color.yellow;
-        //Gizmos.DrawLine (transform.position, Input.mousePosition);
+        Debug.Log("MiningLaser::Place -- placing... ");
     }
 }
