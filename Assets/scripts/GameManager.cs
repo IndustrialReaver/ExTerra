@@ -59,7 +59,6 @@ public class GameManager : MonoBehaviour {
         }
         
         player = Instantiate(Resources.Load("Player"), Vector3.zero, Quaternion.identity) as GameObject;
-        player.GetComponent<Inventory>().Init();
         GetComponent<CameraControls>().player = player;
         oldplayerpos = player.transform.position;
 

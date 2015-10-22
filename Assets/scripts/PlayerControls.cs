@@ -14,7 +14,9 @@ public class PlayerControls : MonoBehaviour {
     private float healthBarlenght;
     
     //INV
+    public Vector2 inventorySize = new Vector2(5, 10);
     private Inventory inv;
+    private InvDisp invD;
 
     //DEATH
     public GameObject deathObject;
@@ -42,7 +44,12 @@ public class PlayerControls : MonoBehaviour {
         curBPdelay = BPdelay;
         maxHealth = health;
         healthBarlenght = (Screen.width / 2) * (health / (float)maxHealth);
+        
         inv = transform.GetComponent<Inventory>();
+        inv.Init((int)inventorySize.x, (int)inventorySize.y);
+        
+        invD = transform.GetComponent<InvDisp>();
+        invD.Init((int)inventorySize.x, (int)inventorySize.y);
     }
     
 	// Update is called once per frame
@@ -132,12 +139,12 @@ public class PlayerControls : MonoBehaviour {
         {
             Destroy(block.gameObject);
         }
+
     }
 
     private void place(Vector2 pos)
     {
         Debug.Log("PlayerControls::place -- block: " + inv.GetSelected().name);
-        //transform.BroadcastMessage("Mine", SendMessageOptions.DontRequireReceiver);
         GameObject placedBlock = Instantiate(inv.PlaceSelected(), pos, new Quaternion()) as GameObject;
         placedBlock.name = inv.GetSelected().name;  
     }

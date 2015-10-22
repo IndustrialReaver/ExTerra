@@ -7,32 +7,22 @@ public class Inventory : MonoBehaviour {
     //Game Manager
     GameManager gm;
 
-    //UI bullshit
-    public UnityEngine.UI.Text[] invDispText = new UnityEngine.UI.Text[5];
-    public UnityEngine.UI.Image[] invDispImg = new UnityEngine.UI.Image[5];
-    public UnityEngine.UI.Image[] invSelectImg = new UnityEngine.UI.Image[5];
+    //size of inventory
+    private Vector2 size;
 
     //dictonary of block counts
     public Dictionary<string, int> invAct;
 
     //2d array of inventory grid
-    public string[,] inventory = new string[5, 10];
+    public string[,] inventory;
 
     //boolean value of if the inventory is full
     bool full = false;
 
     //pointer to currently selected inventory space
-    public Vector2 pointer = new Vector2(0,0);
-
-    //color of selector
-    Color bkgc;
+    private Vector2 pointer = new Vector2(0,0);
 
 
-	// Use this for initialization
-	void Start () {
-
-	}
-	
 	// Update is called once per frame
 	void Update () {
         //updateInv();
@@ -62,9 +52,13 @@ public class Inventory : MonoBehaviour {
     /// <summary>
     /// Initilizes a clean inventory, and syncs its list of blocks with the GM's list
     /// </summary>
-    public void Init()
+    /// <param name="x">the number of rows to make</param>
+    /// <param name="y">the number of columns to make</param>
+    public void Init(int x, int y)
     {
+        size = new Vector2(x, y);
         invAct = new Dictionary<string, int>();
+        inventory = new string[x, y];
         gm = Camera.main.GetComponent<GameManager>();
         GameObject[] temp = gm.blocks;
         for (int i = 0; i < temp.Length; i++)
@@ -155,12 +149,15 @@ public class Inventory : MonoBehaviour {
                     invAct.Add(b, 1);
                 }
                 Debug.Log("Inventory::Add -- added: " + b + " to [" + x + ", " + y + " ]");
+                updateInv();
                 return true;
             }
+            Debug.Log("Inventory::Add -- failed");
             return false;
         }
         else
         {
+            Debug.Log("Inventory::Add -- cannot add: Inventory full");
             return false;
         }
     }
@@ -186,33 +183,41 @@ public class Inventory : MonoBehaviour {
         {
             inventory[(int)pointer.x, (int)pointer.y] = null;
         }
+        updateInv();
         return toplace;
     }
 
-
-
-
-    private void updateSel()
+    /// <summary>
+    /// moves the pointer in the inventory to the first row in the specified collumn
+    /// </summary>
+    /// <param name="y">to column to move the pointer to</param>
+    public void updateSel(int y)
     {
-        foreach (UnityEngine.UI.Image i in invSelectImg)
-        {
-            i.color = bkgc;
-        }
+        pointer = new Vector2(0,y);
     }
 
-    private void updateSel(int n)
+    /// <summary>
+    /// moves the pointer in the inventory to the specified position
+    /// </summary>
+    /// <param name="x">the row to move the pointer to</param>
+    /// <param name="y">the column to move the pointer to</param>
+    public void updateSel(int x, int y)
     {
-        //updateSel();
-        //invSelectImg[n].color = Color.cyan;
-        //selectedBlock = invDispText[n].text.Substring(0, invDispText[n].text.IndexOf(':'));
-        pointer = new Vector2(n,0);
+        pointer = new Vector2(x, y);
     }
 
+    /// <summary>
+    /// gets the current pointer location
+    /// </summary>
+    /// <returns>vector2 representation of the pointer in the inventory</returns>
+    public Vector2 getPointer()
+    {
+        return pointer;
+    }
 
-
-
-
-
+    /// <summary>
+    /// updates the inventorys full status
+    /// </summary>
     private void updateInv()
     {
         bool tfull = true;
@@ -226,7 +231,6 @@ public class Inventory : MonoBehaviour {
                 }
             }
         }
-
         full = tfull;
     }
 
