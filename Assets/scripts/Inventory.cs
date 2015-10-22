@@ -234,4 +234,21 @@ public class Inventory : MonoBehaviour {
         full = tfull;
     }
 
+    /// <summary>
+    /// Returns the name of the Game object at the given position in the inventory, without removing it.
+    /// </summary>
+    /// <returns>selected inventory space</returns>
+    public string GetNameAt(int x, int y)
+    {
+        return inventory[x, y];
+    }
+
+    /// <summary>
+    /// Returns the number of Game objects held at the given position in the inventory, without removing them.
+    /// </summary>
+    /// <returns>number of items at selected inventory space</returns>
+    public int GetNumberAt(int x, int y)
+    {
+        return invAct[inventory[x, y]];
+    }
 }

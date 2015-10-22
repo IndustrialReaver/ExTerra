@@ -92,4 +92,9 @@ public class GameManager : MonoBehaviour {
             gameobjects.Remove(o);
         }
     }
+
+    public GameObject getPlayer()
+    {
+        return player;
+    }
 }

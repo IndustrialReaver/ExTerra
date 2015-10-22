@@ -48,7 +48,7 @@ public class PlayerControls : MonoBehaviour {
         inv = transform.GetComponent<Inventory>();
         inv.Init((int)inventorySize.x, (int)inventorySize.y);
         
-        invD = transform.GetComponent<InvDisp>();
+        invD = gm.GetComponent<InvDisp>();
         invD.Init((int)inventorySize.x, (int)inventorySize.y);
     }
     
