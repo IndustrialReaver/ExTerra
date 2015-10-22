@@ -16,7 +16,7 @@ public class Inventory : MonoBehaviour {
     public Dictionary<string, int> invAct;
 
     //2d array of inventory grid
-    public GameObject[,] inventory = new GameObject[5, 10];
+    public string[,] inventory = new string[5, 10];
 
     //boolean value of if the inventory is full
     bool full = false;
@@ -88,7 +88,7 @@ public class Inventory : MonoBehaviour {
     /// </summary>
     /// <param name="b">The GameObject to add</param>
     /// <returns>returns true if added, false if inventory is full</returns>
-    public bool Add(GameObject b)
+    public bool Add(string b)
     {
         if (!full)
         {
@@ -96,18 +96,24 @@ public class Inventory : MonoBehaviour {
             {
                 for (int j = 0; j < inventory.GetLength(1); j++)
                 {
-                    if (inventory[i, j] == null)
+                    if (inventory[i, j] == b)
+                    {
+                        invAct[b] += 1;
+                        Debug.Log("Inventory::Add -- added: " + b + " to [" + i + ", " + j + " ]");
+                        return true;
+                    }
+                    else if (inventory[i, j] == null)
                     {
                         inventory[i, j] = b;
-                        if (invAct.ContainsKey(b.name))
+                        if (invAct.ContainsKey(b))
                         {
-                            invAct[b.name] += 1;
+                            invAct[b] += 1;
                         }
                         else
                         {
-                            invAct.Add(b.name, 1);
+                            invAct.Add(b, 1);
                         }
-                        Debug.Log("Inventory::Add -- added: " + b.name + " to [" + i + ", " + j + " ]");
+                        Debug.Log("Inventory::Add -- added: " + b + " to [" + i + ", " + j + " ]");
                         return true;
                     }
                 }
@@ -127,21 +133,28 @@ public class Inventory : MonoBehaviour {
     /// <param name="x">The x position in the inventory</param>
     /// <param name="y">The y position in the inventory</param>
     /// <returns>returns true if added, false if inventory is full</returns>
-    public bool Add(GameObject b, int x, int y)
+    public bool Add(string b, int x, int y)
     {
         if (!full)
         {
-            if (inventory[x, y] == null)
+            if (inventory[x, y] == b)
+            {
+                invAct[b] += 1;
+                Debug.Log("Inventory::Add -- added: " + b + " to [" + x + ", " + y + " ]");
+                return true;
+            }
+            else if (inventory[x, y] == null)
             {
                 inventory[x, y] = b;
-                if (invAct.ContainsKey(b.name))
+                if (invAct.ContainsKey(b))
                 {
-                    invAct[b.name] += 1;
+                    invAct[b] += 1;
                 }
                 else
                 {
-                    invAct.Add(b.name, 1);
+                    invAct.Add(b, 1);
                 }
+                Debug.Log("Inventory::Add -- added: " + b + " to [" + x + ", " + y + " ]");
                 return true;
             }
             return false;
@@ -158,7 +171,7 @@ public class Inventory : MonoBehaviour {
     /// <returns>Currently selected inventory space</returns>
     public GameObject GetSelected()
     {
-        return inventory[(int)pointer.x, (int)pointer.y];
+        return gm.blockmaps[inventory[(int)pointer.x, (int)pointer.y]];
     }
 
     /// <summary>

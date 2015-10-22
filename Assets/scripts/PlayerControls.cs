@@ -128,7 +128,7 @@ public class PlayerControls : MonoBehaviour {
         Debug.Log("PlayerControls::mine -- block: " + block.name);
 
         //try and add to inventory
-        if (inv.Add(block.gameObject))
+        if (inv.Add(block.name))
         {
             Destroy(block.gameObject);
         }
@@ -138,7 +138,7 @@ public class PlayerControls : MonoBehaviour {
     {
         Debug.Log("PlayerControls::place -- block: " + inv.GetSelected().name);
         //transform.BroadcastMessage("Mine", SendMessageOptions.DontRequireReceiver);
-        GameObject placedBlock = Instantiate(Resources.Load<GameObject>("inv.PlaceSelected().name"), pos, new Quaternion()) as GameObject;
+        GameObject placedBlock = Instantiate(inv.PlaceSelected(), pos, new Quaternion()) as GameObject;
         placedBlock.name = inv.GetSelected().name;  
     }
 

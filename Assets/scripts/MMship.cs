@@ -5,7 +5,7 @@ public class MMship : MonoBehaviour {
 
     public float speed = 0.01f;
 
-    private bool screenoffset = true;
+    private bool screenoffset = false;
 
 	// Use this for initialization
 	void Start () {
