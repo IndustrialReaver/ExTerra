@@ -75,6 +75,7 @@ public class Inventory : MonoBehaviour {
         }
 
         updateInv();
+        updateSel(0,0);
     }
     
     /// <summary>

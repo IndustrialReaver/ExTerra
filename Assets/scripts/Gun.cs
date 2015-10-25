@@ -17,12 +17,15 @@ public class Gun : MonoBehaviour {
 	
 	void Start () {
 		playpew = gameObject.AddComponent<AudioSource>() as AudioSource;
-		
+        shootTime = shootInc;
 	}
 	
 	void FixedUpdate () {
 
-		shootTime++;
+        if (shootTime > 0)
+        {
+            shootTime--;
+        }
 		if(canRotate){
 			var mouse = Input.mousePosition;
 			var screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
@@ -34,15 +37,16 @@ public class Gun : MonoBehaviour {
 	}
 	
 	public void Fire(string side) {
-		if ((this.side.ToLower().Equals(side.ToLower()) ) && (shootTime%shootInc == 0)) {
+		if ((this.side.ToLower().Equals(side.ToLower()) ) && (shootTime <= 0)) {
 			Instantiate (bullet, transform.position + new Vector3 (0, 0, 1f), transform.rotation);
 			playpew.PlayOneShot (pewpew);
-		}
+            shootTime = shootInc;
+        }
 	}
 
 	public void EnemyFire(GameObject target) {
 
-		if (shootTime % shootInc == 0) {
+		if (shootTime <= 0) {
 			var targ = target.transform.position;
 			var turr = transform.position;
 			var offset = new Vector2(targ.x - turr.x, targ.y - turr.y);
@@ -51,7 +55,8 @@ public class Gun : MonoBehaviour {
             if (canRotate) { transform.rotation = Quaternion.Euler(0, 0, angle); } //else { transform.rotation = GetComponentInParent<Transform>().rotation;  }
 			Instantiate (bullet, transform.position + new Vector3 (0, 0, 1f), transform.rotation);
 			playpew.PlayOneShot (pewpew);
-		}
+            shootTime = shootInc;
+        }
 
 	}
 	

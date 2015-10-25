@@ -7,11 +7,6 @@ public class MMship : MonoBehaviour {
 
     private bool screenoffset = false;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
 	// Update is called once per frame
 	void FixedUpdate () {
         transform.Translate(speed * Time.deltaTime, 0, 0);

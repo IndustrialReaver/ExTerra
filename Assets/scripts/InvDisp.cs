@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 
 public class InvDisp : MonoBehaviour {
 
@@ -16,13 +16,13 @@ public class InvDisp : MonoBehaviour {
     private Vector2 curselect;
 
     //UI bullshit
-    public UnityEngine.UI.Text[,] invDispText;
-    public UnityEngine.UI.Image[,] invDispImg;
-    public UnityEngine.UI.Image[,] invSelectImg;
+    public Text[,] invDispText;
+    public Image[,] invDispImg;
+    public Image[,] invSelectImg;
 
-    public UnityEngine.UI.Text[] invDText = new UnityEngine.UI.Text[5];
-    public UnityEngine.UI.Image[] invDImg = new UnityEngine.UI.Image[5];
-    public UnityEngine.UI.Image[] invSImg = new UnityEngine.UI.Image[5];
+    public Text[] invDText = new Text[5];
+    public Image[] invDImg = new Image[5];
+    public Image[] invSImg = new Image[5];
     
     //color of selector
     Color bkgc;
@@ -32,9 +32,9 @@ public class InvDisp : MonoBehaviour {
 	public void Init (int x, int y) {
         size = new Vector2(x, y);
         inventory = transform.GetComponent<GameManager>().getPlayer().GetComponent<Inventory>();
-        invDispText = new UnityEngine.UI.Text[x,y];
-        invDispImg = new UnityEngine.UI.Image[x,y];
-        invSelectImg = new UnityEngine.UI.Image[x,y];
+        invDispText = new Text[x,y];
+        invDispImg = new Image[x,y];
+        invSelectImg = new Image[x,y];
 
         //UnityEngine.UI.Text tempTxt;
         //UnityEngine.UI.Image tempImg;
@@ -62,6 +62,7 @@ public class InvDisp : MonoBehaviour {
 
         bkgc = invDispImg[0, 1].color;
         curselect = inventory.getPointer();
+        updateSelect();
         init = true;
 	}
 	

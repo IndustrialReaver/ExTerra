@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class EnemyControls : MonoBehaviour {
 
@@ -17,6 +16,7 @@ public class EnemyControls : MonoBehaviour {
     public float topSpeed = 5.0f;
 
     private Vector2 movement;
+    private Rigidbody2D rgdb;
 	
 	
 	public int shootInc = 2;
@@ -33,20 +33,24 @@ public class EnemyControls : MonoBehaviour {
         maxHealth = health;
         tshootInc = shootInc;
         healthBarlenght = (Screen.width / 6) * (health / (float)maxHealth);
-	}
+        rgdb = GetComponent<Rigidbody2D>();
+    }
 
     void Update()
     {
-        Vector2 dir = GetComponent<Rigidbody2D>().velocity;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-        transform.rotation = Quaternion.Euler(0, 0, q.eulerAngles.z - 90);
+        if (rgdb.velocity.magnitude > 0)
+        {
+            Vector2 dir = rgdb.velocity;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+            transform.rotation = Quaternion.Euler(0, 0, q.eulerAngles.z - 90);
+        }
     }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
 
-        if (target != null && Vector2.Distance(transform.position, target.transform.position) > 10)
+        if (target != null && Vector2.Distance(transform.position, target.transform.position) > seekDistance)
         {
             target = null;
         }
@@ -77,20 +81,20 @@ public class EnemyControls : MonoBehaviour {
         //movement
         
         
-        if (target != null && Vector2.Distance(this.transform.position, target.transform.position) > 2)
+        if (target != null && Vector2.Distance(this.transform.position, target.transform.position) > (fireDistance/2))
         {
             movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y));
-            GetComponent<Rigidbody2D>().AddForce(movement);
+            rgdb.AddForce(movement);
         }
         else
         {
-            if (GetComponent<Rigidbody2D>().velocity.magnitude < 1 || GetComponent<Rigidbody2D>().velocity.magnitude > topSpeed)
+            if (rgdb.velocity.magnitude < 1 || rgdb.velocity.magnitude > topSpeed)
             {
-                GetComponent<Rigidbody2D>().velocity *= 0.75f;
+                rgdb.velocity *= 0.75f;
             }
             else
             {
-                GetComponent<Rigidbody2D>().velocity *= 0;
+                rgdb.velocity *= 0.25f;
             }
         }
 

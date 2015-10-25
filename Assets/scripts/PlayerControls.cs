@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class PlayerControls : MonoBehaviour {
 
@@ -11,8 +11,15 @@ public class PlayerControls : MonoBehaviour {
     //HP
     public int health = 5000;
     private int maxHealth;
-    private float healthBarlenght;
-    
+    public Slider healthBar;
+    public Image damageImage;                                   
+    public float flashSpeed = 5f;                               
+    public Color flashColour = new Color(1f, 0f, 0f, 0.1f);
+    Animator anim;                                              
+    AudioSource playerAudio;                          
+    bool isDead;                                                
+    bool damaged;
+
     //INV
     public Vector2 inventorySize = new Vector2(5, 10);
     private Inventory inv;
@@ -43,13 +50,19 @@ public class PlayerControls : MonoBehaviour {
         gm = Camera.main.GetComponent<GameManager>();
         curBPdelay = BPdelay;
         maxHealth = health;
-        healthBarlenght = (Screen.width / 2) * (health / (float)maxHealth);
         
         inv = transform.GetComponent<Inventory>();
         inv.Init((int)inventorySize.x, (int)inventorySize.y);
         
         invD = gm.GetComponent<InvDisp>();
         invD.Init((int)inventorySize.x, (int)inventorySize.y);
+
+        healthBar = gm.PlayerHealthBar;
+        damageImage = gm.PlayerDamageImage;
+
+        healthBar.maxValue = maxHealth;
+        healthBar.value = health;
+
     }
     
 	// Update is called once per frame
@@ -58,7 +71,7 @@ public class PlayerControls : MonoBehaviour {
 		float inputY = Input.GetAxis("Horizontal");
 		float inputX = Input.GetAxis("Vertical");
         
-        movementX += (Vector2)transform.up * (speed.x * inputX);
+        movementX += (Vector2)transform.up * (speed.x * inputX) * Time.deltaTime;
 
 
         if (GetComponent<Rigidbody2D>().velocity.magnitude < topSpeed)
@@ -117,6 +130,18 @@ public class PlayerControls : MonoBehaviour {
 
         if (curBPdelay > 0) curBPdelay--;
 
+        //HP
+        if (damaged)
+        {
+            damageImage.color = flashColour;
+        }
+        else
+        {
+            damageImage.color = Color.Lerp(damageImage.color, Color.clear, flashSpeed * Time.deltaTime);
+        }
+
+        damaged = false;
+
     }
 
 	private void shoot(){
@@ -144,33 +169,30 @@ public class PlayerControls : MonoBehaviour {
 
     private void place(Vector2 pos)
     {
-        Debug.Log("PlayerControls::place -- block: " + inv.GetSelected().name);
+        string blockToPlace = inv.GetSelected().name;
+        Debug.Log("PlayerControls::place -- block: " + blockToPlace);
         GameObject placedBlock = Instantiate(inv.PlaceSelected(), pos, new Quaternion()) as GameObject;
-        placedBlock.name = inv.GetSelected().name;  
+        placedBlock.name = blockToPlace;  
     }
 
     public void ApplyDamage(int damage)
     {
+        damaged = true;
         health -= damage;
-        healthBarlenght = (Screen.width / 2) * (health / (float)maxHealth);
+        healthBar.value = health;
+
         if (health <= 0)
         {
             Death();
         }
     }
 
-    void OnGUI()
-    {
-        Vector2 newPos = new Vector2(Screen.width - (Screen.width / 4), Screen.height);
-        GUI.Box(new Rect(newPos.x - (Screen.width / 2), Screen.height - newPos.y + 80, healthBarlenght, 20), health + "/" + maxHealth);
-        
-    }
-
     void Death()
     {
         Instantiate(deathObject, transform.position, Quaternion.Euler(90,0,0));
-        Destroy(this.gameObject);
-        //Application.LoadLevel("ExTerraMainMenu");
+        gm.destroyed(gameObject);
+        Destroy(gameObject);
+        Application.LoadLevel("ExTerraMainMenu");
     }
 
     public void Ping(Transform p){
