@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System;
+using System.Collections.Generic;
 
 public class BroceduralGen : MonoBehaviour {
 
@@ -8,11 +9,12 @@ public class BroceduralGen : MonoBehaviour {
     byte[,] littleBros;
     GameObject[] bros;
 
+    private System.Random broseph = new System.Random();
 
     public void BroBroBro()
     {
         bros = Camera.main.GetComponent<GameManager>().blocks;
-        bros.
+        SwapBros(bros);
         
         FISTBUMP();
 
@@ -41,29 +43,29 @@ public class BroceduralGen : MonoBehaviour {
     private void FISTBUMP()
     {
         littleBros = new byte[128, 128];
-        int offset = Mathf.RoundToInt(Random.value * 200);
+        int offset = Mathf.RoundToInt(UnityEngine.Random.value * 200);
 
         for (int px = 0; px < littleBros.GetLength(0); px++)
         {
-            int stone = BRO(px + offset, 0 + offset, 80, 15, 1);
-            stone += BRO(px + offset, 0 + offset, 50, 30, 1);
-            stone += BRO(px + offset, 0 + offset, 10, 10, 1);
-            stone += 75;
+            int brostone = BRO(px + offset, 0 + offset, 80, 15, 1);
+            brostone += BRO(px + offset, 0 + offset, 50, 30, 1);
+            brostone += BRO(px + offset, 0 + offset, 10, 10, 1);
+            brostone += 75;
 
-            print(stone);
+            //print(stone);
 
-            int dirt = BRO(px + offset, 0 + offset, 100f, 35, 1);
-            dirt += BRO(px + offset, 100 + offset, 50, 30, 1);
-            dirt += 75;
+            int brodirt = BRO(px + offset, 0 + offset, 100f, 35, 1);
+            brodirt += BRO(px + offset, 100 + offset, 50, 30, 1);
+            brodirt += 75;
 
 
             for (int py = 0; py < littleBros.GetLength(1); py++)
             {
-                if (py < stone)
+                if (py < brostone)
                 {
                     littleBros[px, py] = 0;
 
-                    if (BRO(px + offset, py + offset, 12, 16, 1) > 5)
+                    if (BRO(px + offset, py + offset, 12, 16, 1) > 7)
                     {
                         littleBros[px, py] = 2;
                     }
@@ -82,13 +84,26 @@ public class BroceduralGen : MonoBehaviour {
 
 
                 }
-                else if (py < dirt)
+                else if (py < brodirt)
                 {
                     littleBros[px, py] = 2;
                 }
 
 
             }
+        }
+    }
+
+    public void SwapBros<T>(this IList<T> broski)
+    {
+        int n = broski.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = broseph.Next(n + 1);
+            T value = broski[k];
+            broski[k] = broski[n];
+            broski[n] = value;
         }
     }
 
