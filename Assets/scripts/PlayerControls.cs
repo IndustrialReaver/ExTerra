@@ -10,12 +10,14 @@ public class PlayerControls : MonoBehaviour {
 
     //HP
     public int health = 5000;
+    public int regain = 500;
+    public int HPRegained = 1;
+    private int curRegain = 0;
     private int maxHealth;
     public Slider healthBar;
     public Image damageImage;                                   
     public float flashSpeed = 5f;                               
-    public Color flashColour = new Color(1f, 0f, 0f, 0.1f);
-    Animator anim;                                              
+    public Color flashColour = new Color(1f, 0f, 0f, 0.1f);     
     AudioSource playerAudio;                          
     bool isDead;                                                
     bool damaged;
@@ -139,8 +141,26 @@ public class PlayerControls : MonoBehaviour {
         {
             damageImage.color = Color.Lerp(damageImage.color, Color.clear, flashSpeed * Time.deltaTime);
         }
-
         damaged = false;
+
+        if(curRegain > 0)
+        {
+            regain--;
+        }
+        if(curRegain <= 0)
+        {
+            if(health < maxHealth)
+            {
+                health += HPRegained;
+                healthBar.value = health;
+                curRegain = regain;
+            }
+            if (health > maxHealth)
+            {
+                health = maxHealth;
+                healthBar.value = health;
+            }
+        }
 
     }
 
@@ -178,6 +198,7 @@ public class PlayerControls : MonoBehaviour {
     public void ApplyDamage(int damage)
     {
         damaged = true;
+        curRegain = regain*4;
         health -= damage;
         healthBar.value = health;
 

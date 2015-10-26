@@ -27,6 +27,8 @@ public class EnemyControls : MonoBehaviour {
 	public bool canRotate = true;
 	private int side = 1;
 	string guntoshoot;
+
+    GameManager gm;
 	
 	// Use this for initialization
 	void Start () {
@@ -34,6 +36,7 @@ public class EnemyControls : MonoBehaviour {
         tshootInc = shootInc;
         healthBarlenght = (Screen.width / 6) * (health / (float)maxHealth);
         rgdb = GetComponent<Rigidbody2D>();
+        gm = Camera.main.GetComponent<GameManager>();
     }
 
     void Update()
@@ -53,8 +56,12 @@ public class EnemyControls : MonoBehaviour {
         if (target != null && Vector2.Distance(transform.position, target.transform.position) > seekDistance)
         {
             target = null;
+            gm.wartime = false;
         }
-
+        if(target != null)
+        {
+            gm.wartime = true;
+        }
         if (target == null)
         {
             RaycastHit2D[] search;
@@ -79,7 +86,6 @@ public class EnemyControls : MonoBehaviour {
 		}
 
         //movement
-        
         
         if (target != null && Vector2.Distance(this.transform.position, target.transform.position) > (fireDistance/2))
         {
@@ -132,7 +138,8 @@ public class EnemyControls : MonoBehaviour {
 
     void Death()
     {
-        Camera.main.GetComponent<GameManager>().destroyed(transform.gameObject);
+        gm.destroyed(transform.gameObject);
+        gm.wartime = false;
         Instantiate(death, transform.position, Quaternion.Euler(90, 0, 0));
         Destroy(this.gameObject);
     }
@@ -140,7 +147,13 @@ public class EnemyControls : MonoBehaviour {
     void OnGUI () 
     {
         Vector2 newPos = Camera.main.WorldToScreenPoint(transform.position);
-        GUI.Box(new Rect(newPos.x - (Screen.width / 12), Screen.height - newPos.y + 80, healthBarlenght, 20), health + "/" + maxHealth);
+        Texture2D color = new Texture2D(1, 1);
+        color.SetPixel(1, 1, Color.red);
+        color.wrapMode = TextureWrapMode.Repeat;
+        color.Apply();
+        GUIStyle clr = new GUIStyle();
+        clr.normal.background = color;
+        GUI.Box(new Rect(newPos.x - (Screen.width / 12), Screen.height - newPos.y + 80, healthBarlenght, 5),"",clr);
     }
     
 

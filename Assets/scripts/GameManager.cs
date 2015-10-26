@@ -18,10 +18,21 @@ public class GameManager : MonoBehaviour {
     ArrayList gameobjects = new ArrayList();
     Vector2 oldplayerpos;
     GameObject player;
+    bool turnable = true;
+    public Text warning;
+    int warningTime = 75;
+    int curWarningTime = 0;
     GameObject enemy;
 
-	// Use this for initialization
-	void Start () {
+    public bool wartime = false;
+
+    //AUDIO
+    public AudioClip peace;
+    public AudioClip war;
+    AudioSource audso;
+
+    // Use this for initialization
+    void Start () {
         blocks = new GameObject[4];
         blockmaps = new Dictionary<string, GameObject>();
         blocks[0] = Resources.Load<GameObject>("dirt_block");
@@ -32,6 +43,7 @@ public class GameManager : MonoBehaviour {
         blockmaps.Add(blocks[2].name, blocks[2]);
         blocks[3] = Resources.Load<GameObject>("grass_block");
         blockmaps.Add(blocks[3].name, blocks[3]);
+
 
         enemy = Resources.Load<GameObject>("Enemy");
 
@@ -82,10 +94,30 @@ public class GameManager : MonoBehaviour {
         map.sprite.texture.Apply();
 
 
-	}
+        audso = GetComponent<AudioSource>();
+        audso.loop = true;
+        audso.clip = peace;
+        audso.Play();
+
+    }
 	
+    void LateUpdate()
+    {
+        //AUDIOwwwwwwwwwwwwwwwww
+        if (wartime && audso.clip != war)
+        {
+            audso.clip = war;
+            audso.PlayDelayed(2);
+        }
+        if (!wartime && audso.clip != peace)
+        {
+            audso.clip = peace;
+            audso.PlayDelayed(2);
+        }
+    }
 	// Update is called once per frame
 	void Update () {
+        
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -93,7 +125,7 @@ public class GameManager : MonoBehaviour {
         }
 
 
-        if (!oldplayerpos.Equals(player.transform.position))
+        if (player != null && !oldplayerpos.Equals(player.transform.position))
         {
             foreach (GameObject g in gameobjects)
             {
@@ -113,12 +145,36 @@ public class GameManager : MonoBehaviour {
         
 
         oldplayerpos = player.transform.position;
-	}
+
+        if(curWarningTime > 0)
+        {
+            curWarningTime--;
+        }
+        if(curWarningTime <= 0)
+        {
+            warning.enabled = false;
+        }
+        if(Vector2.Distance(oldplayerpos, Vector2.zero) > (grid.GetLength(0) / 2) * 100 && turnable)
+        {
+            player.GetComponent<Rigidbody2D>().velocity *= -1;
+            warning.enabled = true;
+            curWarningTime = warningTime;
+            turnable = false;
+        }
+        if (!turnable && Vector2.Distance(oldplayerpos, Vector2.zero) < (grid.GetLength(0) / 2) * 100)
+        {
+            turnable = true;
+        }
+    }
 
     public void destroyed(GameObject o)
     {
         if (gameobjects.Contains(o))
         {
+            if (o.Equals(player))
+            {
+                player = null;
+            }
             gameobjects.Remove(o);
         }
     }
