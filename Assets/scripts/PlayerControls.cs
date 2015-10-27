@@ -70,59 +70,22 @@ public class PlayerControls : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-        /*
-		float inputY = Input.GetAxis("Horizontal");
-		float inputX = Input.GetAxis("Vertical");
-        
-        movementX += (Vector2)transform.up * (speed.x * inputX) * Time.deltaTime;
+        float dir = Input.GetAxis("Vertical");
 
+        float actSpeed = dir*speed.x;
 
-        if (GetComponent<Rigidbody2D>().velocity.magnitude < topSpeed)
-        {
-            GetComponent<Rigidbody2D>().AddForce(movementX);
-        }
+        Vector2 velocity = GetComponent<Rigidbody2D>().velocity;
 
-		if (inputX == 0) {
-			movementX *= 0.75f;
-		}
-
-		if (GetComponent<Rigidbody2D>().velocity.magnitude > topSpeed) {
-			GetComponent<Rigidbody2D>().velocity *= 0.99f;
-		}
-        */
-
-        float uThrust = speed.x;
-
-        if (Input.GetKey(KeyCode.LeftControl))
-        {
-            uThrust *= 2;
-        }
-
-        Vector2 velocity = new Vector3();
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            velocity += (Vector2)transform.up;
-            velocity *= uThrust;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            velocity -= (Vector2)transform.up;
-            velocity *= uThrust;
-        }
-        else
-        {
-            velocity = GetComponent<Rigidbody2D>().velocity;
-            velocity *= 0.75f;
-        }
-
+        velocity += (Vector2)transform.up;
+        velocity *= actSpeed;
         velocity *= Time.smoothDeltaTime;
+        if (dir < 1 && dir > -1)
+        {
+            velocity = GetComponent<Rigidbody2D>().velocity;// *(0.9f * Time.smoothDeltaTime);
+        }
+        GetComponent<Rigidbody2D>().velocity = velocity;
 
-        GetComponent<Rigidbody2D>().velocity += (Vector2)velocity;
 
-        //Vector3 l = transform.position;
-        //l += velocity;
-        //transform.position = l;
 
         //********************************************************************
         //********************************************************************
