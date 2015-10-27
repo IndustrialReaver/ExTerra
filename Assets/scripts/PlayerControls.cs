@@ -70,6 +70,7 @@ public class PlayerControls : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
+        /*
 		float inputY = Input.GetAxis("Horizontal");
 		float inputX = Input.GetAxis("Vertical");
         
@@ -88,37 +89,73 @@ public class PlayerControls : MonoBehaviour {
 		if (GetComponent<Rigidbody2D>().velocity.magnitude > topSpeed) {
 			GetComponent<Rigidbody2D>().velocity *= 0.99f;
 		}
+        */
 
-        //********************************************************************
-        //********************************************************************
-        //********************************************************************
-		
-		if(canRotate){
-            Vector3 mouse = Input.mousePosition;
-            Vector3 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
-            Vector2 offset = new Vector2(mouse.x - screenPoint.x, mouse.y - screenPoint.y);
-			float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.Euler(0, 0, angle-90);
+        float uThrust = speed.x;
+
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            uThrust *= 2;
         }
 
-		shootTime++;
-		if ((shootTime % shootInc == 0) && Input.GetMouseButton(0)) {
-			shoot();
+        Vector2 velocity = new Vector3();
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            velocity += (Vector2)transform.up;
+            velocity *= uThrust;
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            velocity -= (Vector2)transform.up;
+            velocity *= uThrust;
+        }
+        else
+        {
+            velocity = GetComponent<Rigidbody2D>().velocity;
+            velocity *= 0.75f;
+        }
+
+        velocity *= Time.smoothDeltaTime;
+
+        GetComponent<Rigidbody2D>().velocity += (Vector2)velocity;
+
+        //Vector3 l = transform.position;
+        //l += velocity;
+        //transform.position = l;
+
+        //********************************************************************
+        //********************************************************************
+        //********************************************************************
+
+
+        Vector3 mouse = Input.mousePosition;
+        Vector3 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
+        Vector2 offset = new Vector2(mouse.x - screenPoint.x, mouse.y - screenPoint.y);
+		float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+		transform.rotation = Quaternion.Euler(0, 0, angle-90);
+        
+        if(shootTime > 0)
+        {
+            shootTime--;
+        }
+		if ((shootTime <= 0) && Input.GetMouseButton(0)) {
+            shootTime = shootInc;
+            shoot();
 		}
-        if ((shootTime % shootInc == 0) && Input.GetMouseButton(1) && curBPdelay <= 0) {
-                RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                Transform block = hit.transform;
-                if (block != null && block.name.Contains("block") && !Input.GetKey(KeyCode.LeftShift))
-                {
-                    mine(block);
-                    curBPdelay = BPdelay;
-                }
-                else if (block == null && Input.GetKey(KeyCode.LeftShift) )//&& inv.GetSelected() != null)
-                {
-                    place(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-                    curBPdelay = BPdelay;
-                }
-            
+        if (Input.GetMouseButton(1) && curBPdelay <= 0) {
+            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            Transform block = hit.transform;
+            if (block != null && block.name.Contains("block") && !Input.GetKey(KeyCode.LeftShift))
+            {
+                mine(block);
+                curBPdelay = BPdelay;
+            }
+            else if (block == null && Input.GetKey(KeyCode.LeftShift) )//&& inv.GetSelected() != null)
+            {
+                place(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                curBPdelay = BPdelay;
+            }
 		}
 
         if (Input.GetKey(KeyCode.LeftShift))
