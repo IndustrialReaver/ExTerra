@@ -108,8 +108,11 @@ public class PlayerControls : MonoBehaviour {
         //********************************************************************
         //********************************************************************
 
-
-        float angle = transform.rotation.eulerAngles.z - (Mathf.Atan2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * Mathf.Rad2Deg) * Time.smoothDeltaTime;
+        if (dir < 0)
+        {
+            dir = 0;
+        }
+        float angle = transform.rotation.eulerAngles.z - (Mathf.Atan2(Input.GetAxis("Horizontal"), dir) * Mathf.Rad2Deg) * Time.smoothDeltaTime;
         transform.rotation = Quaternion.Euler(0, 0, angle);
 
 
