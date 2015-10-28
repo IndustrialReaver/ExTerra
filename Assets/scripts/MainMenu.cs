@@ -32,14 +32,16 @@ public class MainMenu : MonoBehaviour
         Application.LoadLevel("ExTerraMainMenu");
     }
 
-    public void LoadGame()
-    {
-        Application.LoadLevel("ExTerraLoad");
-    }
-
     public void SaveGame()
     {
 
+        
+    }
+
+
+    public void LoadGame()
+    {
+        
     }
 
     public void About()

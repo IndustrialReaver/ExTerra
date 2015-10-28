@@ -32,11 +32,14 @@ public class EnemyControls : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-        maxHealth = health;
-        tshootInc = shootInc;
-        healthBarlenght = (Screen.width / 6) * (health / (float)maxHealth);
-        rgdb = GetComponent<Rigidbody2D>();
-        gm = Camera.main.GetComponent<GameManager>();
+        if (!globals.pause)
+        {
+            maxHealth = health;
+            tshootInc = shootInc;
+            healthBarlenght = (Screen.width / 6) * (health / (float)maxHealth);
+            rgdb = GetComponent<Rigidbody2D>();
+            gm = Camera.main.GetComponent<GameManager>();
+        }
     }
 
     void Update()
@@ -52,67 +55,70 @@ public class EnemyControls : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+        if (!globals.pause)
+        {
+            if (target != null && Vector2.Distance(transform.position, target.transform.position) > seekDistance)
+            {
+                target = null;
+                gm.wartime = false;
+            }
+            if (target != null)
+            {
+                gm.wartime = true;
+            }
+            if (target == null)
+            {
+                RaycastHit2D[] search;
+                search = Physics2D.CircleCastAll(transform.position, seekDistance, Vector2.zero);
 
-        if (target != null && Vector2.Distance(transform.position, target.transform.position) > seekDistance)
-        {
-            target = null;
-            gm.wartime = false;
-        }
-        if(target != null)
-        {
-            gm.wartime = true;
-        }
-        if (target == null)
-        {
-            RaycastHit2D[] search;
-            search = Physics2D.CircleCastAll(transform.position, seekDistance, Vector2.zero);
-
-            foreach(RaycastHit2D n in search){
-                if (n.transform.tag == "Player")
+                foreach (RaycastHit2D n in search)
                 {
-                    target = n.transform.gameObject;
+                    if (n.transform.tag == "Player")
+                    {
+                        target = n.transform.gameObject;
+                    }
                 }
+
             }
 
-        }
-
-        if (canRotate && target != null)
-        {
-			Vector2 tarRot = target.transform.position;
-			Vector2 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
-			Vector2 offset = new Vector2(tarRot.x - screenPoint.x, tarRot.y - screenPoint.y);
-			var angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.Euler(0, 0, angle-90);
-		}
-
-        //movement
-        
-        if (target != null && Vector2.Distance(this.transform.position, target.transform.position) > (fireDistance/2))
-        {
-            movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y));
-            rgdb.AddForce(movement);
-        }
-        else
-        {
-            if (rgdb.velocity.magnitude < 1 || rgdb.velocity.magnitude > topSpeed)
+            if (canRotate && target != null)
             {
-                rgdb.velocity *= 0.75f;
+                Vector2 tarRot = target.transform.position;
+                Vector2 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
+                Vector2 offset = new Vector2(tarRot.x - screenPoint.x, tarRot.y - screenPoint.y);
+                var angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.Euler(0, 0, angle - 90);
+            }
+
+            //movement
+
+            if (target != null && Vector2.Distance(this.transform.position, target.transform.position) > (fireDistance / 2))
+            {
+                movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y));
+                rgdb.AddForce(movement);
             }
             else
             {
-                rgdb.velocity *= 0.25f;
+                if (rgdb.velocity.magnitude < 1 || rgdb.velocity.magnitude > topSpeed)
+                {
+                    rgdb.velocity *= 0.75f;
+                }
+                else
+                {
+                    rgdb.velocity *= 0.25f;
+                }
+            }
+
+            if (shootInc > 0)
+            {
+                shootInc--;
+            }
+            if ((shootInc <= 0) && target != null && Vector2.Distance(this.transform.position, target.transform.position) < fireDistance)
+            {
+                shoot();
+                shootInc = tshootInc;
             }
         }
-
-        if (shootInc > 0)
-        {
-            shootInc--;
-        }
-        if ((shootInc <= 0) && target != null && Vector2.Distance(this.transform.position, target.transform.position) < fireDistance)
-        {
-			shoot();
-            shootInc = tshootInc;
-		}
 		
 	}
 

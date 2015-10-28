@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
+
 public class GameManager : MonoBehaviour {
 
     public byte[,] grid = new byte[10,10];
@@ -88,6 +89,7 @@ public class GameManager : MonoBehaviour {
         mapP = map.sprite.texture.GetPixels();
 
         player = Instantiate(Resources.Load("Player"), Vector3.zero, Quaternion.identity) as GameObject;
+        gameobjects.Add(player);
         GetComponent<CameraControls>().player = player;
         oldplayerpos = player.transform.position;
         map.sprite.texture.SetPixel(5, 5, Color.green);
@@ -122,6 +124,7 @@ public class GameManager : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             PauseMenu.enabled = !PauseMenu.enabled;
+            globals.pause = PauseMenu.enabled;
         }
 
 
@@ -194,4 +197,6 @@ public class GameManager : MonoBehaviour {
     {
         return player;
     }
+
+
 }

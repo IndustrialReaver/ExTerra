@@ -13,7 +13,7 @@ public class CameraControls : MonoBehaviour {
         {
             newx = player.transform.position.x;
             newy = player.transform.position.y;
-            transform.position = new Vector3(newx, newy, transform.position.z);
+            transform.position = new Vector3(newx, newy, transform.position.z);//Vector3.Lerp(transform.position, new Vector3(newx, newy, transform.position.z), 2f*Time.smoothDeltaTime);
         }
 	}
 }

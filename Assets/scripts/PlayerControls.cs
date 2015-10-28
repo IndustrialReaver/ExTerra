@@ -47,6 +47,8 @@ public class PlayerControls : MonoBehaviour {
 	private int side = 1;
 	string guntoshoot;
 
+
+
 	// Use this for initialization
 	void Start () {
         gm = Camera.main.GetComponent<GameManager>();
@@ -64,119 +66,113 @@ public class PlayerControls : MonoBehaviour {
 
         healthBar.maxValue = maxHealth;
         healthBar.value = health;
-
     }
 
-    float oldDir = 0;
+
 	// Update is called once per frame
 	void FixedUpdate () {
-
-        float dir = Input.GetAxis("Vertical");
-        float actSpeed = dir * speed.x;
-
-        if (Input.GetKey(KeyCode.LeftControl))
+        if (!globals.pause)
         {
-            actSpeed *= 1.05f;
-        }
+            //MOVEMENT
+            float dir = Input.GetAxis("Vertical");
+            float actSpeed = dir * speed.x;
 
-        Vector2 velocity = GetComponent<Rigidbody2D>().velocity;
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                actSpeed *= 1.05f;
+            }
 
-        if (dir < oldDir)
-        {
-            velocity *= (0.9f * Time.smoothDeltaTime);
-        }
-        else if(dir > 0)
-        {
+            Vector2 velocity = GetComponent<Rigidbody2D>().velocity;
+
             velocity += (Vector2)transform.up;
             velocity *= actSpeed;
             velocity *= Time.smoothDeltaTime;
-        }
-        else if(dir < 0)
-        {
-            velocity -= (Vector2)transform.up;
-            velocity *= actSpeed;
-            velocity *= Time.smoothDeltaTime;
-        }
-        
-        
-        GetComponent<Rigidbody2D>().velocity = velocity;
 
-        oldDir = dir;
+            GetComponent<Rigidbody2D>().velocity = velocity;
 
+            //Update Starfield velocity
+            //Camera.main.GetComponent<Starfield>().RecieveVelocity(-velocity);
 
-        //********************************************************************
-        //********************************************************************
-        //********************************************************************
+            //********************************************************************
+            //********************************************************************
+            //********************************************************************
 
-        if (dir < 0)
-        {
-            dir = 0;
-        }
-        float angle = transform.rotation.eulerAngles.z - (Mathf.Atan2(Input.GetAxis("Horizontal"), dir) * Mathf.Rad2Deg) * Time.smoothDeltaTime;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
-
-
-        if (shootTime > 0)
-        {
-            shootTime--;
-        }
-		if ((shootTime <= 0) && Input.GetMouseButton(0)) {
-            shootTime = shootInc;
-            shoot();
-		}
-        if (Input.GetMouseButton(1) && curBPdelay <= 0) {
-            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-            Transform block = hit.transform;
-            if (block != null && block.name.Contains("block") && !Input.GetKey(KeyCode.LeftShift))
+            //ROTATION
+            //zero out rotational velocity
+            GetComponent<Rigidbody2D>().angularVelocity = 0;
+            if (dir < 0)
             {
-                mine(block);
-                curBPdelay = BPdelay;
+                dir = 0;
             }
-            else if (block == null && Input.GetKey(KeyCode.LeftShift) )//&& inv.GetSelected() != null)
+            float angle = transform.rotation.eulerAngles.z - (Mathf.Atan2(Input.GetAxis("Horizontal"), dir) * Mathf.Rad2Deg) * Time.smoothDeltaTime;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            //PEWPEW
+            if (shootTime > 0)
             {
-                place(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-                curBPdelay = BPdelay;
+                shootTime--;
             }
-		}
-
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            transform.BroadcastMessage("Place", SendMessageOptions.DontRequireReceiver);
-        }
-        else if (Input.GetMouseButton(1))
-        {
-            transform.BroadcastMessage("Mine", SendMessageOptions.DontRequireReceiver);
-        }
-
-        if (curBPdelay > 0) curBPdelay--;
-
-        //HP
-        if (damaged)
-        {
-            damageImage.color = flashColour;
-        }
-        else
-        {
-            damageImage.color = Color.Lerp(damageImage.color, Color.clear, flashSpeed * Time.deltaTime);
-        }
-        damaged = false;
-
-        if(curRegain > 0)
-        {
-            regain--;
-        }
-        if(curRegain <= 0)
-        {
-            if(health < maxHealth)
+            if ((shootTime <= 0) && Input.GetMouseButton(0))
             {
-                health += HPRegained;
-                healthBar.value = health;
-                curRegain = regain;
+                shootTime = shootInc;
+                shoot();
             }
-            if (health > maxHealth)
+            if (Input.GetMouseButton(1) && curBPdelay <= 0)
             {
-                health = maxHealth;
-                healthBar.value = health;
+                RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+                Transform block = hit.transform;
+                if (block != null && block.name.Contains("block") && !Input.GetKey(KeyCode.LeftShift))
+                {
+                    mine(block);
+                    curBPdelay = BPdelay;
+                }
+                else if (block == null && Input.GetKey(KeyCode.LeftShift))//&& inv.GetSelected() != null)
+                {
+                    place(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                    curBPdelay = BPdelay;
+                }
+            }
+
+            //LAYZARZ
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                transform.BroadcastMessage("Place", SendMessageOptions.DontRequireReceiver);
+            }
+            else if (Input.GetMouseButton(1))
+            {
+                transform.BroadcastMessage("Mine", SendMessageOptions.DontRequireReceiver);
+            }
+
+            if (curBPdelay > 0) curBPdelay--;
+
+            //HP
+            if (damaged)
+            {
+                damageImage.color = flashColour;
+            }
+            else
+            {
+                damageImage.color = Color.Lerp(damageImage.color, Color.clear, flashSpeed * Time.deltaTime);
+            }
+            damaged = false;
+
+            if (curRegain > 0)
+            {
+                regain--;
+            }
+            if (curRegain <= 0)
+            {
+                if (health < maxHealth)
+                {
+                    health += HPRegained;
+                    healthBar.value = health;
+                    curRegain = regain;
+                }
+                if (health > maxHealth)
+                {
+                    health = maxHealth;
+                    healthBar.value = health;
+                }
             }
         }
 
@@ -240,7 +236,4 @@ public class PlayerControls : MonoBehaviour {
         ping.transform.LookAt(p);
     }
 
-    void OnTriggerEnter2D(Collider2D coll) {
-		//stuff
-	}
 }
