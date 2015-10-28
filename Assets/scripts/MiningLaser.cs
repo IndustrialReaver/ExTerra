@@ -11,10 +11,16 @@ public class MiningLaser : MonoBehaviour {
     public Color SP;
     public Color FP;
 
-	// Use this for initialization
-	void Start () {
+    public bool canRotate = false;
+    public AudioClip pewpew;
+    AudioSource playpew;
+    
+    // Use this for initialization
+    void Start () {
         line = transform.GetComponent<LineRenderer>();
-	}
+        playpew = gameObject.AddComponent<AudioSource>() as AudioSource;
+        playpew.clip = pewpew;
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -24,21 +30,31 @@ public class MiningLaser : MonoBehaviour {
             if (timer < 0)
             {
                 line.enabled = false;
+                playpew.Stop();
             }
             else
             {
                 timer--;
             }
         }
-        
-	}
+        if (canRotate)
+        {
+            Vector3 mouse = Input.mousePosition;
+            Vector3 screenPoint = Camera.main.WorldToScreenPoint(transform.position);
+            Vector2 offset = new Vector2(mouse.x - screenPoint.x, mouse.y - screenPoint.y);
+            float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle - 90);
+        }
+
+    }
 
 	public void Mine(){
         line.enabled = true;
         timer = 4;
 		line.SetColors(SM, FM);
         line.SetPosition(0, Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        line.SetPosition(1, transform.position);
+        line.SetPosition(1, transform.GetChild(0).transform.position);
+        playpew.Play();
 		Debug.Log("MiningLaser::Mine -- mining... ");
 	}
 
@@ -49,7 +65,8 @@ public class MiningLaser : MonoBehaviour {
         timer = 4;
         line.SetColors(SP, FP);
         line.SetPosition(0, Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        line.SetPosition(1, transform.position);
+        line.SetPosition(1, transform.GetChild(0).transform.position);
+        playpew.Play();
         Debug.Log("MiningLaser::Place -- placing... ");
     }
 }

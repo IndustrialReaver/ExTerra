@@ -66,25 +66,42 @@ public class PlayerControls : MonoBehaviour {
         healthBar.value = health;
 
     }
-    
+
+    float oldDir = 0;
 	// Update is called once per frame
 	void FixedUpdate () {
 
         float dir = Input.GetAxis("Vertical");
+        float actSpeed = dir * speed.x;
 
-        float actSpeed = dir*speed.x;
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            actSpeed *= 1.05f;
+        }
 
         Vector2 velocity = GetComponent<Rigidbody2D>().velocity;
 
-        velocity += (Vector2)transform.up;
-        velocity *= actSpeed;
-        velocity *= Time.smoothDeltaTime;
-        if (dir < 1 && dir > -1)
+        if (dir < oldDir)
         {
-            velocity = GetComponent<Rigidbody2D>().velocity;// *(0.9f * Time.smoothDeltaTime);
+            velocity *= (0.9f * Time.smoothDeltaTime);
         }
+        else if(dir > 0)
+        {
+            velocity += (Vector2)transform.up;
+            velocity *= actSpeed;
+            velocity *= Time.smoothDeltaTime;
+        }
+        else if(dir < 0)
+        {
+            velocity -= (Vector2)transform.up;
+            velocity *= actSpeed;
+            velocity *= Time.smoothDeltaTime;
+        }
+        
+        
         GetComponent<Rigidbody2D>().velocity = velocity;
 
+        oldDir = dir;
 
 
         //********************************************************************
@@ -92,13 +109,11 @@ public class PlayerControls : MonoBehaviour {
         //********************************************************************
 
 
-        Vector3 mouse = Input.mousePosition;
-        Vector3 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
-        Vector2 offset = new Vector2(mouse.x - screenPoint.x, mouse.y - screenPoint.y);
-		float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-		transform.rotation = Quaternion.Euler(0, 0, angle-90);
-        
-        if(shootTime > 0)
+        float angle = transform.rotation.eulerAngles.z - (Mathf.Atan2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * Mathf.Rad2Deg) * Time.smoothDeltaTime;
+        transform.rotation = Quaternion.Euler(0, 0, angle);
+
+
+        if (shootTime > 0)
         {
             shootTime--;
         }

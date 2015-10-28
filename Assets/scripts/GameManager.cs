@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour {
 	
     void LateUpdate()
     {
-        //AUDIOwwwwwwwwwwwwwwwww
+        //AUDIO
         if (wartime && audso.clip != war)
         {
             audso.clip = war;
@@ -183,6 +183,11 @@ public class GameManager : MonoBehaviour {
     {
         map.sprite.texture.SetPixels(mapP);
         map.sprite.texture.SetPixel((int)(Mathf.Round(p.x + 500) / 100), (int)(Mathf.Round(p.y + 500) / 100), c);
+    }
+
+    private void drawArrow(GameObject t, Color c)
+    {
+
     }
 
     public GameObject getPlayer()
