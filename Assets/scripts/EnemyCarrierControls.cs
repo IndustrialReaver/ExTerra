@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
+using System.Collections;
 
-public class EnemyControls : MonoBehaviour {
-
+public class EnemyCarrierControls : MonoBehaviour {
 
     //HP
     public int health = 3000;
@@ -15,28 +15,35 @@ public class EnemyControls : MonoBehaviour {
     public Vector2 speed = new Vector2(5, 5);
     public float topSpeed = 5.0f;
 
+    public int unitCap = 8;
+    public int units = 0;
+
+
     private Vector2 movement;
     private Rigidbody2D rgdb;
-	
-	
-	public int shootInc = 2;
+
+    private Gun[] launchbays;
+
+    public int shootInc = 2;
     private int tshootInc;
 
-	public GameObject target;
-	public GameObject death;
-	public bool canRotate = true;
-	private int side = 1;
-	string guntoshoot;
+    public GameObject target;
+    public GameObject death;
+    public bool canRotate = true;
+    private int side = 0;
+    string guntoshoot;
 
     GameManager gm;
-	
-	// Use this for initialization
-	void Start () {
+
+    // Use this for initialization
+    void Start()
+    {
         maxHealth = health;
         tshootInc = shootInc;
         healthBarlenght = (Screen.width / 6) * (health / (float)maxHealth);
         rgdb = GetComponent<Rigidbody2D>();
         gm = Camera.main.GetComponent<GameManager>();
+        launchbays = GetComponentsInChildren<Gun>();
     }
 
     void Update()
@@ -52,9 +59,10 @@ public class EnemyControls : MonoBehaviour {
             }
         }
     }
-	
-	// Update is called once per frame
-	void FixedUpdate () {
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
         if (!globals.pause)
         {
             if (target != null && Vector2.Distance(transform.position, target.transform.position) > seekDistance)
@@ -92,7 +100,7 @@ public class EnemyControls : MonoBehaviour {
 
             //movement
 
-            if (target != null && Vector2.Distance(this.transform.position, target.transform.position) > (fireDistance / 2))
+            if (target != null && Vector2.Distance(transform.position, target.transform.position) > (fireDistance / 2))
             {
                 movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y));
                 rgdb.AddForce(movement);
@@ -119,8 +127,8 @@ public class EnemyControls : MonoBehaviour {
                 shootInc = tshootInc;
             }
         }
-		
-	}
+
+    }
 
     public void ApplyDamage(int damage)
     {
@@ -132,15 +140,22 @@ public class EnemyControls : MonoBehaviour {
         }
     }
 
-	private void shoot(){
-		if(side > 0) {
-			guntoshoot = "Right";
-		} else {
-			guntoshoot = "Left";
-		}
-		transform.BroadcastMessage ("EnemyFire", target, SendMessageOptions.DontRequireReceiver);
-		side *= -1;
-	}
+    private void shoot()
+    {
+        if (side < launchbays.Length-1)
+        {
+            side++;
+        }
+        else
+        {
+            side = 0;
+        }
+        if (units < unitCap)
+        {
+            launchbays[side].EnemyLaunch(target);
+            units++;
+        }
+    }
 
     void Death()
     {
@@ -150,7 +165,7 @@ public class EnemyControls : MonoBehaviour {
         Destroy(this.gameObject);
     }
 
-    void OnGUI () 
+    void OnGUI()
     {
         Vector2 newPos = Camera.main.WorldToScreenPoint(transform.position);
         Texture2D color = new Texture2D(1, 1);
@@ -159,8 +174,6 @@ public class EnemyControls : MonoBehaviour {
         color.Apply();
         GUIStyle clr = new GUIStyle();
         clr.normal.background = color;
-        GUI.Box(new Rect(newPos.x - (Screen.width / 12), Screen.height - newPos.y + 80, healthBarlenght, 5),"",clr);
+        GUI.Box(new Rect(newPos.x - (Screen.width / 12), Screen.height - newPos.y + 80, healthBarlenght, 5), "", clr);
     }
-    
-
 }

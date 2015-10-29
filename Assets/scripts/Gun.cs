@@ -44,7 +44,6 @@ public class Gun : MonoBehaviour {
 	}
 
 	public void EnemyFire(GameObject target) {
-
 		if (shootTime <= 0) {
 			var targ = target.transform.position;
 			var turr = transform.position;
@@ -56,9 +55,20 @@ public class Gun : MonoBehaviour {
 			playpew.PlayOneShot (pewpew);
             shootTime = shootInc;
         }
-
 	}
-	
-	
-	
+
+    public void EnemyLaunch(GameObject target)
+    {
+        if (shootTime <= 0)
+        {
+            GameObject fighter = Instantiate(bullet, transform.position + new Vector3(0, 0, 1f), transform.rotation) as GameObject;
+            fighter.GetComponent<Rigidbody2D>().velocity = 2*Vector3.up;
+            fighter.GetComponent<EnemyFighterControls>().target = target;
+            fighter.GetComponent<EnemyFighterControls>().carrier = GetComponentInParent<EnemyCarrierControls>();
+            playpew.PlayOneShot(pewpew);
+            shootTime = shootInc;
+        }
+    }
+
+
 }
