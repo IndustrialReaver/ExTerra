@@ -89,7 +89,7 @@ public class EnemyCarrierControls : MonoBehaviour {
 
             }
 
-            if (canRotate && target != null)
+            if (rgdb.velocity.magnitude > 0 && target != null)
             {
                 Vector2 tarRot = target.transform.position;
                 Vector2 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
