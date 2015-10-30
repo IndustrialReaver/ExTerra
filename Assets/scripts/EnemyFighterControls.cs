@@ -44,62 +44,40 @@ public class EnemyFighterControls : MonoBehaviour {
     {
         if (!globals.pause)
         {
-            
-            //rotation
-            Vector2 targ = target.transform.position;
-            Vector2 turr = transform.position;
-            Vector2 offset = new Vector2(targ.x - turr.x, targ.y - turr.y);
-            float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-            Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-            transform.rotation = Quaternion.Slerp(transform.rotation, q, 2f);
-            
-            
-            //movement
-            /*
-            if (GetComponent<Rigidbody2D>().velocity.magnitude < topSpeed && target != null)
+            if(target != null)
             {
-                movement += (Vector2)transform.up;
-                Vector2 n = transform.position;
-                movement *= Time.smoothDeltaTime;
-                n += movement;
-                rgdb.AddForce(-n);
-            }
-            else
-            {
-                movement += (Vector2)transform.up;
-                Vector2 n = transform.position;
-                movement *= Time.smoothDeltaTime;
-                n += movement;
-                rgdb.AddForce(n *= 0.75f);
-            }
-            */
-            if (target != null && Vector2.Distance(this.transform.position, target.transform.position) > (fireDistance / 2))
-            {
-                movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y));
-                rgdb.AddForce(movement * Time.smoothDeltaTime);
-            }
-            
-            /*
-            else
-            {
-                if (rgdb.velocity.magnitude < 1 || rgdb.velocity.magnitude > topSpeed)
-                {
-                    rgdb.velocity *= 0.75f;
-                }
-                else
-                {
-                    rgdb.velocity *= 0.25f;
-                }
-            }
-            */
+                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), target.GetComponent<Collider2D>());
 
-            if (target != null && Vector2.Distance(this.transform.position, target.transform.position) < (fireDistance / 3))
-            {
-                movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y)) * -1;
-                rgdb.AddForce(movement * Time.smoothDeltaTime);
+
+                //rotation
+                Vector2 targ = target.transform.position;
+                Vector2 turr = transform.position;
+                Vector2 offset = new Vector2(targ.x - turr.x, targ.y - turr.y);
+                float angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+                Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+                transform.rotation = Quaternion.Slerp(transform.rotation, q, 2f);
+
+
+                //movement
+                if (Vector2.Distance(transform.position, target.transform.position) > (fireDistance / 2) && rgdb.velocity.magnitude < topSpeed)
+                {
+                    movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y));
+                    rgdb.AddForce(movement * Time.smoothDeltaTime);
+                }
+                //else if (Vector2.Distance(this.transform.position, target.transform.position) < (fireDistance / 3))
+                //{
+                //    movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y)) * -1;
+                //    rgdb.AddForce(movement * Time.smoothDeltaTime);
+                //}
+                else if(Vector2.Distance(transform.position, target.transform.position) > fireDistance)
+                {
+                    rgdb.velocity *= 0.9f * Time.smoothDeltaTime;
+                }
+
+
+
             }
             
-
 
             if (shootInc > 0)
             {

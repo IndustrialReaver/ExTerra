@@ -23,7 +23,8 @@ public class GameManager : MonoBehaviour {
     public Text warning;
     int warningTime = 75;
     int curWarningTime = 0;
-    GameObject enemy;
+    GameObject[] enemy;
+    
 
     public bool wartime = false;
 
@@ -45,8 +46,9 @@ public class GameManager : MonoBehaviour {
         blocks[3] = Resources.Load<GameObject>("grass_block");
         blockmaps.Add(blocks[3].name, blocks[3]);
 
-
-        enemy = Resources.Load<GameObject>("Enemy");
+        enemy = new GameObject[2];
+        enemy[0] = Resources.Load<GameObject>("Enemy");
+        enemy[1] = Resources.Load<GameObject>("Enemy_Carrier");
 
         for (int i = 0; i < grid.GetLength(0); i++)
         {
@@ -70,9 +72,22 @@ public class GameManager : MonoBehaviour {
                     }
                     else if (chance > 0.8)
                     {
-                        x -= Random.Range(0, 100);
-                        y -= Random.Range(0, 100);
-                        GameObject newenemy = Instantiate(enemy, new Vector2(x, y), Quaternion.identity) as GameObject;
+                        //x -= Random.Range(0, 100);
+                        //y -= Random.Range(0, 100);
+
+                        GameObject newenemy;
+
+                        float e = Random.Range(-1, 1);
+                        if(e < 0)
+                        {
+                            newenemy = Instantiate(enemy[0], new Vector2(x, y), Quaternion.identity) as GameObject;
+                            newenemy.name = "Enemy";
+                        }
+                        else
+                        {
+                            newenemy = Instantiate(enemy[1], new Vector2(x, y), Quaternion.identity) as GameObject;
+                            newenemy.name = "Enemy_Carrier";
+                        }
                         gameobjects.Add(newenemy);
                         map.sprite.texture.SetPixel(i, j, Color.red);
                     }

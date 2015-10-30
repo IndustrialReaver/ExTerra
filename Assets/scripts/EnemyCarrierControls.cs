@@ -55,7 +55,7 @@ public class EnemyCarrierControls : MonoBehaviour {
                 Vector2 dir = rgdb.velocity;
                 float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                 Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-                transform.rotation = Quaternion.Euler(0, 0, q.eulerAngles.z - 90);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, q.eulerAngles.z - 90), 2f);
             }
         }
     }
