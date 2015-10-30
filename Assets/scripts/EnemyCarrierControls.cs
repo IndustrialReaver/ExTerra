@@ -89,13 +89,13 @@ public class EnemyCarrierControls : MonoBehaviour {
 
             }
 
-            if (rgdb.velocity.magnitude > 0 && target != null)
+            if (rgdb.velocity.magnitude > 1 && target != null)
             {
                 Vector2 tarRot = target.transform.position;
                 Vector2 screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
                 Vector2 offset = new Vector2(tarRot.x - screenPoint.x, tarRot.y - screenPoint.y);
-                var angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.Euler(0, 0, angle - 90);
+                var angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg * Time.smoothDeltaTime;
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, angle - 90),2f);
             }
 
             //movement
