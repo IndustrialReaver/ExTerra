@@ -24,6 +24,10 @@ public class GameManager : MonoBehaviour {
     int warningTime = 75;
     int curWarningTime = 0;
     GameObject[] enemy;
+
+
+    //Render Dsitance
+    public int RenderDistance = 150;
     
 
     public bool wartime = false;
@@ -32,6 +36,9 @@ public class GameManager : MonoBehaviour {
     public AudioClip peace;
     public AudioClip war;
     AudioSource audso;
+
+    //PLAYER ALLIES
+
 
     // Use this for initialization
     void Start () {
@@ -45,6 +52,8 @@ public class GameManager : MonoBehaviour {
         blockmaps.Add(blocks[2].name, blocks[2]);
         blocks[3] = Resources.Load<GameObject>("grass_block");
         blockmaps.Add(blocks[3].name, blocks[3]);
+
+        mapP = new Color[100];
 
         enemy = new GameObject[2];
         enemy[0] = Resources.Load<GameObject>("Enemy");
@@ -100,9 +109,12 @@ public class GameManager : MonoBehaviour {
             }
         }
 
-        map.sprite.texture.Apply();
-        mapP = map.sprite.texture.GetPixels();
-
+        //map.sprite.texture.Apply();
+        
+        for(int i = 0; i < mapP.Length; i++){
+            mapP[i] = Color.black;
+        }
+        
         player = Instantiate(Resources.Load("Player"), Vector3.zero, Quaternion.identity) as GameObject;
         gameobjects.Add(player);
         GetComponent<CameraControls>().player = player;
@@ -143,11 +155,14 @@ public class GameManager : MonoBehaviour {
         }
 
 
+
+        map.sprite.texture.SetPixels(mapP);
         if (player != null && !oldplayerpos.Equals(player.transform.position))
         {
             foreach (GameObject g in gameobjects)
             {
-                if (Vector2.Distance(g.transform.position, player.transform.position) > 150)
+                //CHECK IF IN RENDER DISTANCE
+                if (Vector2.Distance(g.transform.position, player.transform.position) > RenderDistance)
                 {
                     g.SetActive(false);
                 }
@@ -155,8 +170,23 @@ public class GameManager : MonoBehaviour {
                 {
                     g.SetActive(true);
                 }
+
+                //UPDATE MAP
+                if (g.name.ToLower().Contains("planet"))
+                {
+                    setMapP(g.transform.position, Color.blue);
+                }
+                else if (g.name.ToLower().Contains("enemy"))
+                {
+                    setMapP(g.transform.position, Color.red);
+                }
+                else if (g.name.ToLower().Contains("player"))
+                {
+                    setMapP(g.transform.position, Color.green);
+                }
+
             }
-            setMapP(player.transform.position, Color.green);
+            //setMapP(player.transform.position, Color.green);
             map.sprite.texture.Apply();
         }
 
@@ -199,7 +229,6 @@ public class GameManager : MonoBehaviour {
 
     private void setMapP(Vector2 p, Color c)
     {
-        map.sprite.texture.SetPixels(mapP);
         map.sprite.texture.SetPixel((int)(Mathf.Round(p.x + 500) / 100), (int)(Mathf.Round(p.y + 500) / 100), c);
     }
 

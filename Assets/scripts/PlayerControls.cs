@@ -227,7 +227,7 @@ public class PlayerControls : MonoBehaviour {
         Instantiate(deathObject, transform.position, Quaternion.Euler(90,0,0));
         gm.destroyed(gameObject);
         Destroy(gameObject);
-        Application.LoadLevel("ExTerraMainMenu");
+        //Application.LoadLevel("ExTerraMainMenu");
     }
 
     public void Ping(Transform p){
