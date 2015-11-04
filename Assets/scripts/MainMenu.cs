@@ -34,14 +34,19 @@ public class MainMenu : MonoBehaviour
 
     public void SaveGame()
     {
-
-        
+        GameManager gm = Camera.main.GetComponent<GameManager>();
+        string SaveData = gm.save();
+        Debug.Log(SaveData);
+        globals.currentSave = SaveData;
+        Application.LoadLevel("ExTerraMainMenu");
     }
 
 
     public void LoadGame()
     {
-        
+        globals.shouldload = true;
+        Debug.Log(globals.currentSave);
+        Application.LoadLevel("ExTerraStaging");
     }
 
     public void About()

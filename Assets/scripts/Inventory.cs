@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class Inventory : MonoBehaviour {
 
@@ -47,8 +48,7 @@ public class Inventory : MonoBehaviour {
             updateSel(4);
         }
 	}
-
-
+    
     /// <summary>
     /// Initilizes a clean inventory, and syncs its list of blocks with the GM's list
     /// </summary>
@@ -251,5 +251,41 @@ public class Inventory : MonoBehaviour {
     public int GetNumberAt(int x, int y)
     {
         return invAct[inventory[x, y]];
+    }
+
+    /// <summary>
+    /// saves the inventory to a string
+    /// </summary>
+    /// <returns>a string representation of the current inventory</returns>
+    public string save()
+    {
+        string SaveData = "";
+        string[] keys = new string[invAct.Count];
+        invAct.Keys.CopyTo(keys,0);
+        foreach(string s in keys)
+        {
+            SaveData += s + "-" + invAct[s] + ",";
+        }
+        return SaveData;
+    }
+
+    /// <summary>
+    /// loads an inventory from a string
+    /// </summary>
+    /// <param name="s">the inventory to load</param>
+    public void load(string s)
+    {
+        string[] entries = s.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        int position = 0;
+        foreach (string t in entries)
+        {
+            string[] temp = t.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+            invAct[temp[0]] = int.Parse(temp[1]);
+            if (int.Parse(temp[1]) > 0)
+            {
+                inventory[0, position] = temp[0];
+                position++;
+            }
+        }
     }
 }

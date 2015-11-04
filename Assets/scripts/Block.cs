@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Block : MonoBehaviour {
+public class Block : MonoBehaviour, SaveData {
     public int health = 500;
     public float mod = 1;
 	// Use this for initialization
@@ -16,24 +16,9 @@ public class Block : MonoBehaviour {
 
     Vector2 calcPos(Vector2 pos)
     {
-        //*
-        //float newX = transform.position.x;
-        //float newY = transform.position.y;
-        //newX *= 10;
-        //newY *= 10;
-        //newX = newX % mod;
-        //newY = newY % mod;
-        //newX = Mathf.Round(newX);
-        //newY = Mathf.Round(newY);
-        //newX = newX / 10;
-        //newY = newY / 10;
-        //*/
-        float newX = Mathf.Round(transform.position.x);// % mod;
-        float newY = Mathf.Round(transform.position.y);// % mod;
-        //Debug.Log(newX);
-        //Debug.Log(newY);
+        float newX = Mathf.Round(transform.position.x);
+        float newY = Mathf.Round(transform.position.y);
         return new Vector2(newX, newY);
-        //transform.position = new Vector2(newX, newZ);
     }
 
     public void ApplyDamage(int damage)
@@ -41,7 +26,28 @@ public class Block : MonoBehaviour {
         health -= damage;
         if (health < 0)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
+    }
+
+    public string save()
+    {
+        string SaveData = "";
+        //name
+        SaveData += gameObject.name + ",";
+        //location
+        SaveData += transform.position.x + "," + transform.position.y + ",";
+        //health
+        SaveData += health + ",";
+        return SaveData;
+    }
+
+    public void load(string s)
+    {
+        Debug.Log("Block::load -- " + s);
+        string[] values = s.Split(new char[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
+        gameObject.name = values[0];
+        transform.position = new Vector2(float.Parse(values[1]), float.Parse(values[2]));
+        health = int.Parse(values[3]);
     }
 }

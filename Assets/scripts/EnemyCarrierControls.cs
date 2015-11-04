@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyCarrierControls : MonoBehaviour {
+public class EnemyCarrierControls : MonoBehaviour, SaveData {
 
     //HP
     public int health = 3000;
@@ -175,5 +175,28 @@ public class EnemyCarrierControls : MonoBehaviour {
         GUIStyle clr = new GUIStyle();
         clr.normal.background = color;
         GUI.Box(new Rect(newPos.x - (Screen.width / 12), Screen.height - newPos.y + 80, healthBarlenght, 5), "", clr);
+    }
+
+    public string save()
+    {
+        //save data
+        string SaveData = "";
+        //name
+        SaveData += gameObject.name + ":";
+        //location
+        SaveData += transform.position.x + ":" + transform.position.y + ":";
+        //health
+        SaveData += health;
+
+        return SaveData;
+    }
+
+    public void load(string s)
+    {
+        Debug.Log("EnemyCarrierControls::load -- " + s);
+        string[] values = s.Split(':');
+        gameObject.name = values[0];
+        transform.position = new Vector2(float.Parse(values[1]), float.Parse(values[2]));
+        health = int.Parse(values[3]);
     }
 }

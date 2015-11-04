@@ -9,6 +9,8 @@ public class BroceduralGen : MonoBehaviour {
     byte[,] littleBros;
     GameObject[] bros;
 
+    int offset = -1;
+
     private System.Random broseph = new System.Random();
 
     public void BroBroBro()
@@ -35,6 +37,12 @@ public class BroceduralGen : MonoBehaviour {
         }
     }
 
+    public void BroBroBro(int off)
+    {
+        offset = off;
+        BroBroBro();
+    }
+
     private int BRO(int x, int y, float scale, float mag, float exp)
     {
         return (int)(Mathf.Pow((Mathf.PerlinNoise(x / scale, y / scale) * mag), (exp)));
@@ -43,7 +51,10 @@ public class BroceduralGen : MonoBehaviour {
     private void FISTBUMP()
     {
         littleBros = new byte[128, 128];
-        int offset = Mathf.RoundToInt(UnityEngine.Random.value * 200);
+        if (offset < 0)
+        {
+            offset = Mathf.RoundToInt(UnityEngine.Random.value * 200);
+        }
 
         for (int px = 0; px < littleBros.GetLength(0); px++)
         {

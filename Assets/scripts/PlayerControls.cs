@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerControls : MonoBehaviour {
+public class PlayerControls : MonoBehaviour, SaveData{
 
     //player vars
 
@@ -10,9 +10,9 @@ public class PlayerControls : MonoBehaviour {
 
     //HP
     public int health = 5000;
-    public int regain = 500;
+    public float regain = 500;
     public int HPRegained = 1;
-    private int curRegain = 0;
+    private float curRegain = 0;
     private int maxHealth;
     public Slider healthBar;
     public Image damageImage;                                   
@@ -50,7 +50,7 @@ public class PlayerControls : MonoBehaviour {
 
 
 	// Use this for initialization
-	void Start () {
+	public void Init () {
         gm = Camera.main.GetComponent<GameManager>();
         curBPdelay = BPdelay;
         maxHealth = health;
@@ -158,7 +158,7 @@ public class PlayerControls : MonoBehaviour {
 
             if (curRegain > 0)
             {
-                regain--;
+                regain -= Time.smoothDeltaTime;
             }
             if (curRegain <= 0)
             {
@@ -234,6 +234,50 @@ public class PlayerControls : MonoBehaviour {
         GameObject ping = Instantiate(Resources.Load("ShieldPing"), transform.position, transform.rotation) as GameObject;
         ping.transform.parent = this.transform;
         ping.transform.LookAt(p);
+    }
+
+    public string save()
+    {
+        //save data
+        string SaveData = "";
+        //name
+        SaveData += gameObject.name + ":";
+        //location
+        SaveData += transform.position.x + ":" + transform.position.y + ":";
+        //health
+        SaveData += health + ":";
+        //inventory
+        SaveData += inv.save();
+
+        return SaveData;
+    }
+
+    public void load(string s)
+    {
+        Debug.Log("PlayerControls::load -- " + s);
+        string[] values = s.Split(':');
+        gameObject.name = values[0];
+        transform.position = new Vector2(float.Parse(values[1]), float.Parse(values[2]));
+        health = int.Parse(values[3]);
+
+        gm = Camera.main.GetComponent<GameManager>();
+        curBPdelay = BPdelay;
+
+        inv = transform.GetComponent<Inventory>();
+        inv.Init((int)inventorySize.x, (int)inventorySize.y);
+        string loadinv = values[4];
+        inv.load(loadinv);
+
+        invD = gm.GetComponent<InvDisp>();
+        invD.Init((int)inventorySize.x, (int)inventorySize.y);
+
+        healthBar = gm.PlayerHealthBar;
+        damageImage = gm.PlayerDamageImage;
+
+        healthBar.maxValue = maxHealth;
+        healthBar.value = health;
+
+        
     }
 
 }
