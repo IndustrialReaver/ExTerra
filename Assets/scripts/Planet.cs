@@ -19,9 +19,12 @@ public class Planet : MonoBehaviour, SaveData {
         //location
         SaveData += transform.position.x + ":" + transform.position.y + ":";
         //blocks
-        foreach(Component c in GetComponentsInChildren<SaveData>())
+        foreach(Component c in gameObject.GetComponentsInChildren<SaveData>(true))
         {
-            SaveData += c.gameObject.name + "-" + ((SaveData)c).save() + ":";
+            if (c.gameObject.GetInstanceID() != gameObject.GetInstanceID())
+            {
+                SaveData += c.gameObject.name + "%" + ((SaveData)c).save() + ":";
+            }
         }
 
         return SaveData;
@@ -35,7 +38,7 @@ public class Planet : MonoBehaviour, SaveData {
         transform.position = new Vector2(float.Parse(values[1]), float.Parse(values[2]));
         for(int i = 3; i < values.Length; i++)
         {
-            string[] temp = values[i].Split(new char[] { '-' }, System.StringSplitOptions.RemoveEmptyEntries);
+            string[] temp = values[i].Split(new char[] { '%' }, System.StringSplitOptions.RemoveEmptyEntries);
             GameObject nblk = Instantiate(Resources.Load(temp[0])) as GameObject;
             nblk.name = temp[0];
             nblk.transform.parent = transform;

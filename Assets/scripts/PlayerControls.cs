@@ -246,6 +246,8 @@ public class PlayerControls : MonoBehaviour, SaveData{
         SaveData += transform.position.x + ":" + transform.position.y + ":";
         //health
         SaveData += health + ":";
+        //max health
+        SaveData += maxHealth + ":";
         //inventory
         SaveData += inv.save();
 
@@ -259,13 +261,14 @@ public class PlayerControls : MonoBehaviour, SaveData{
         gameObject.name = values[0];
         transform.position = new Vector2(float.Parse(values[1]), float.Parse(values[2]));
         health = int.Parse(values[3]);
+        maxHealth = int.Parse(values[4]);
 
         gm = Camera.main.GetComponent<GameManager>();
         curBPdelay = BPdelay;
 
         inv = transform.GetComponent<Inventory>();
         inv.Init((int)inventorySize.x, (int)inventorySize.y);
-        string loadinv = values[4];
+        string loadinv = values[5];
         inv.load(loadinv);
 
         invD = gm.GetComponent<InvDisp>();

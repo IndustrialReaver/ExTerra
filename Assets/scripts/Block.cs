@@ -45,7 +45,7 @@ public class Block : MonoBehaviour, SaveData {
     public void load(string s)
     {
         Debug.Log("Block::load -- " + s);
-        string[] values = s.Split(new char[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
+        string[] values = s.Split(new char[] { ',' });//, System.StringSplitOptions.RemoveEmptyEntries);
         gameObject.name = values[0];
         transform.position = new Vector2(float.Parse(values[1]), float.Parse(values[2]));
         health = int.Parse(values[3]);
