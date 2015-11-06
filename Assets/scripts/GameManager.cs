@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour, SaveData {
     int curWarningTime = 0;
     GameObject[] enemy;
 
+    int EnemyCount = 0;
+    int EnemyMin = 5;
+
 
     //Render Dsitance
     public int RenderDistance = 150;
@@ -39,7 +42,7 @@ public class GameManager : MonoBehaviour, SaveData {
     AudioSource audso;
 
     //PLAYER ALLIES
-
+    ArrayList SpaceStations = new ArrayList();
 
     // Use this for initialization
     void Start () {
@@ -54,6 +57,7 @@ public class GameManager : MonoBehaviour, SaveData {
         blockmaps.Add(blocks[2].name, blocks[2]);
         blocks[3] = Resources.Load<GameObject>("grass_block");
         blockmaps.Add(blocks[3].name, blocks[3]);
+        blockmaps.Add("space_station", Resources.Load<GameObject>("space_station"));
 
         mapP = new Color[100];
 
@@ -109,6 +113,8 @@ public class GameManager : MonoBehaviour, SaveData {
                             }
                             gameobjects.Add(newenemy);
                             map.sprite.texture.SetPixel(i, j, Color.red);
+
+                            EnemyCount++;
                         }
                         else
                         {
@@ -180,35 +186,51 @@ public class GameManager : MonoBehaviour, SaveData {
             {
                 foreach (GameObject g in gameobjects)
                 {
-                    //CHECK IF IN RENDER DISTANCE
-                    if (Vector2.Distance(g.transform.position, player.transform.position) > RenderDistance)
+                    if (g.Equals(null))
                     {
-                        g.SetActive(false);
+                        destroyed(g);
                     }
                     else
                     {
-                        g.SetActive(true);
-                    }
+                        //CHECK IF IN RENDER DISTANCE
+                        if (Vector2.Distance(g.transform.position, player.transform.position) > RenderDistance)
+                        {
+                            g.SetActive(false);
+                        }
+                        else
+                        {
+                            g.SetActive(true);
+                        }
 
-                    //UPDATE MAP
-                    if (g.name.ToLower().Contains("planet"))
-                    {
-                        setMapP(g.transform.position, Color.blue);
+                        //UPDATE MAP
+                        if (g.name.ToLower().Contains("planet"))
+                        {
+                            setMapP(g.transform.position, Color.blue);
+                        }
+                        else if (g.name.ToLower().Contains("enemy"))
+                        {
+                            setMapP(g.transform.position, Color.red);
+                        }
+                        else if (g.name.ToLower().Contains("player"))
+                        {
+                            setMapP(g.transform.position, Color.green);
+                            oldplayerpos = player.transform.position;
+                        }
                     }
-                    else if (g.name.ToLower().Contains("enemy"))
-                    {
-                        setMapP(g.transform.position, Color.red);
-                    }
-                    else if (g.name.ToLower().Contains("player"))
-                    {
-                        setMapP(g.transform.position, Color.green);
-                        oldplayerpos = player.transform.position;
-                    }
-
                 }
                 //setMapP(player.transform.position, Color.green);
                 map.sprite.texture.Apply();
             }
+
+
+            if(EnemyCount <= EnemyMin)
+            {
+                float x = Random.Range(-500, 500);
+                float y = Random.Range(-500, 500);
+                spawnEnemy(x,y);
+            }
+
+            
         }
     }
 
@@ -220,8 +242,60 @@ public class GameManager : MonoBehaviour, SaveData {
             {
                 player = null;
             }
+            if (o.name.ToLower().Contains("enemy"))
+            {
+                EnemyCount--;
+            }
             gameobjects.Remove(o);
         }
+    }
+
+    public void created(GameObject o)
+    {
+        if (o.name.ToLower().Contains("space_station"))
+        {
+            SpaceStations.Add(o);
+            if (EnemyMin > 0)
+            {
+                EnemyMin--;
+            }
+            if (SpaceStations.Count > 1)
+            {
+                GameObject temp = null;
+                foreach (GameObject g in SpaceStations)
+                {
+                    if(temp != null)
+                    {
+                        temp.GetComponent<SpaceStation>().target = g;
+                    }
+                    temp = g;
+                }
+            }
+        }
+        else
+        {
+            gameobjects.Add(o);
+        }
+    }
+
+    public void spawnEnemy(float x, float y)
+    {
+        GameObject newenemy;
+
+        float e = Random.Range(-1, 1);
+        if (e < 0)
+        {
+            newenemy = Instantiate(enemy[0], new Vector2(x, y), Quaternion.identity) as GameObject;
+            newenemy.name = "Enemy";
+        }
+        else
+        {
+            newenemy = Instantiate(enemy[1], new Vector2(x, y), Quaternion.identity) as GameObject;
+            newenemy.name = "Enemy_Carrier";
+        }
+
+        gameobjects.Add(newenemy);
+        EnemyCount++;
     }
 
     private void setMapP(Vector2 p, Color c)
@@ -243,6 +317,10 @@ public class GameManager : MonoBehaviour, SaveData {
     {
         string SaveData = "";
         foreach (GameObject o in gameobjects)
+        {
+            SaveData += o.name + "/" + o.GetComponent<SaveData>().save() + ";";
+        }
+        foreach (GameObject o in SpaceStations)
         {
             SaveData += o.name + "/" + o.GetComponent<SaveData>().save() + ";";
         }
@@ -268,6 +346,10 @@ public class GameManager : MonoBehaviour, SaveData {
             }
             else
             {
+                if (temp[0].ToLower().Contains("enemy"))
+                {
+                    EnemyCount++;
+                }
                 GameObject nobj = Instantiate(Resources.Load(temp[0])) as GameObject;
                 nobj.GetComponent<SaveData>().load(temp[1]);
                 gameobjects.Add(nobj);

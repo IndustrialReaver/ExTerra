@@ -43,7 +43,19 @@ public class Gun : MonoBehaviour {
         }
 	}
 
-	public void EnemyFire(GameObject target) {
+    public void ShipLaunch(GameObject target)
+    {
+        if (shootTime <= 0)
+        {
+            GameObject fighter = Instantiate(bullet, transform.position + new Vector3(0, 0, 1f), transform.rotation) as GameObject;
+            fighter.GetComponent<CargoShipControls>().target = target;
+            fighter.GetComponent<CargoShipControls>().station = GetComponentInParent<SpaceStation>();
+            playpew.PlayOneShot(pewpew);
+            shootTime = shootInc;
+        }
+    }
+
+    public void EnemyFire(GameObject target) {
 		if (shootTime <= 0) {
 			var targ = target.transform.position;
 			var turr = transform.position;

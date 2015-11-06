@@ -7,11 +7,21 @@ public class Block : MonoBehaviour, SaveData {
 	// Use this for initialization
 	void Start () {
         transform.position = calcPos(transform.position);
+        if (GetComponentInParent<Planet>() == null)
+        {
+            Camera.main.GetComponent<GameManager>().created(gameObject);
+        }
     }
 	
 	// Update is called once per frame
 	void Update () {
         transform.position = calcPos(transform.position);
+
+        if (name.Contains("("))
+        {
+            name = name.ToLower().Remove(name.IndexOf('('));
+        }
+        
     }
 
     Vector2 calcPos(Vector2 pos)
@@ -26,6 +36,7 @@ public class Block : MonoBehaviour, SaveData {
         health -= damage;
         if (health < 0)
         {
+            Camera.main.GetComponent<GameManager>().destroyed(gameObject);
             Destroy(gameObject);
         }
     }

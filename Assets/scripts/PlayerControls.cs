@@ -158,22 +158,22 @@ public class PlayerControls : MonoBehaviour, SaveData{
 
             if (curRegain > 0)
             {
-                regain -= Time.smoothDeltaTime;
+                curRegain -= Time.smoothDeltaTime;
             }
             if (curRegain <= 0)
             {
                 if (health < maxHealth)
                 {
                     health += HPRegained;
-                    healthBar.value = health;
                     curRegain = regain;
                 }
                 if (health > maxHealth)
                 {
                     health = maxHealth;
-                    healthBar.value = health;
                 }
+                healthBar.value = health;
             }
+            
         }
 
     }
@@ -196,7 +196,18 @@ public class PlayerControls : MonoBehaviour, SaveData{
         //try and add to inventory
         if (inv.Add(block.name))
         {
+            gm.destroyed(block.gameObject);
             Destroy(block.gameObject);
+        }
+
+        if (inv.invAct.ContainsKey("dirt_block") && inv.invAct["dirt_block"] > 150
+                && inv.invAct.ContainsKey("water_block") && inv.invAct["water_block"] > 150
+                && inv.invAct.ContainsKey("grass_block") && inv.invAct["grass_block"] > 150
+                && inv.invAct.ContainsKey("stone_block") && inv.invAct["stone_block"] > 150
+                && (!inv.invAct.ContainsKey("space_station") || inv.invAct["space_station"] < 1))
+        {
+            if (!inv.invAct.ContainsKey("space_station")) { inv.invAct.Add("space_station", 0); }
+            inv.Add("space_station");
         }
 
     }

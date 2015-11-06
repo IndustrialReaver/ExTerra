@@ -180,7 +180,7 @@ public class Inventory : MonoBehaviour {
     {
         GameObject toplace = GetSelected();
         invAct[toplace.name] -= 1;
-        if (invAct[toplace.name] == 0)
+        if (invAct[toplace.name] <= 0)
         {
             inventory[(int)pointer.x, (int)pointer.y] = null;
         }
