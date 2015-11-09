@@ -65,6 +65,8 @@ public class GameManager : MonoBehaviour, SaveData {
         enemy[0] = Resources.Load<GameObject>("Enemy");
         enemy[1] = Resources.Load<GameObject>("Enemy_Carrier");
 
+        Physics2D.IgnoreLayerCollision(8, 9);
+
         if (globals.shouldload)
         {
             load(globals.currentSave);
@@ -306,6 +308,17 @@ public class GameManager : MonoBehaviour, SaveData {
     private void drawArrow(GameObject t, Color c)
     {
 
+    }
+
+    public GameObject getSpaceStation()
+    {
+        int index = Mathf.RoundToInt(Random.Range(0, (float)SpaceStations.Count-1));
+        return SpaceStations[index] as GameObject;
+    }
+
+    public GameObject[] getSpaceStations()
+    {
+        return SpaceStations.ToArray() as GameObject[];
     }
 
     public GameObject getPlayer()

@@ -30,7 +30,6 @@ public class CargoShipControls : MonoBehaviour
         healthBarlenght = (Screen.width / 12) * (health / (float)maxHealth);
         rgdb = GetComponent<Rigidbody2D>();
         gm = Camera.main.GetComponent<GameManager>();
-        Physics2D.IgnoreCollision(GetComponent<Collider2D>(), station.GetComponent<Collider2D>());
     }
     
 
@@ -52,8 +51,12 @@ public class CargoShipControls : MonoBehaviour
                 //movement
                 if (Vector2.Distance(transform.position, target.transform.position) > 0 && rgdb.velocity.magnitude < topSpeed)
                 {
-                    movement = new Vector2(speed.x * (target.transform.position.x - transform.position.x), speed.y * (target.transform.position.y - transform.position.y));
-                    rgdb.AddForce(movement * Time.smoothDeltaTime);
+                    Vector2 velocity = rgdb.velocity;
+                    float actSpeed = speed.x;
+                    velocity += (Vector2)transform.up;
+                    velocity *= actSpeed;
+                    velocity *= Time.smoothDeltaTime;
+                    rgdb.velocity = velocity;
                 }
             }
         }
@@ -112,10 +115,13 @@ public class CargoShipControls : MonoBehaviour
         health = int.Parse(values[3]);
     }
 
-    void OnCollisionEnter2D(Collision2D c)
+    void OnTriggerEnter2D(Collider2D c)
     {
         if(c.gameObject == target)
         {
+            if (station != null) { station.units--; }
+            globals.credits += 10;
+            Debug.Log("Credits: " + globals.credits);
             Destroy(gameObject);
         }
     }

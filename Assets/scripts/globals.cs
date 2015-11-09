@@ -7,4 +7,6 @@ public class globals : MonoBehaviour {
 
     public static bool shouldload = false;
     public static string currentSave = "";
+
+    public static int credits = 0;
 }

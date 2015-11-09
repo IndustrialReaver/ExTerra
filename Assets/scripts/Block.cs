@@ -17,10 +17,7 @@ public class Block : MonoBehaviour, SaveData {
 	void Update () {
         transform.position = calcPos(transform.position);
 
-        if (name.Contains("("))
-        {
-            name = name.ToLower().Remove(name.IndexOf('('));
-        }
+        if (name.Contains("(")) { name = name.ToLower().Remove(name.IndexOf('(')); }
         
     }
 

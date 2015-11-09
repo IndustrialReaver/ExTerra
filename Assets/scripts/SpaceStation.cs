@@ -46,10 +46,25 @@ public class SpaceStation : MonoBehaviour, SaveData {
             {
                 shoot();
                 LDact = LD;
+                target = null;
             }
             
         }
+        else
+        {
+            target = gm.getSpaceStation();
+            if(target == gameObject)
+            {
+                target = null;
+            }
+        }
 	}
+
+    public GameObject getLaunchBay()
+    {
+        int index = Mathf.RoundToInt(Random.Range(0, (float)(launchbays.Length-1)));
+        return launchbays[index].gameObject;
+    }
 
     public void ApplyDamage(int damage)
     {
@@ -72,7 +87,7 @@ public class SpaceStation : MonoBehaviour, SaveData {
         }
         if (units < unitCap)
         {
-            launchbays[side].ShipLaunch(target);
+            launchbays[side].ShipLaunch(target.GetComponent<SpaceStation>().getLaunchBay());
             units++;
         }
     }
