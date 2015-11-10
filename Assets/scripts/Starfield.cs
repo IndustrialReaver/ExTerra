@@ -264,9 +264,11 @@ public class Starfield : MonoBehaviour
             GameObject newStar = new GameObject("Star");
             SpriteRenderer s = newStar.AddComponent<SpriteRenderer>();
             s.sprite = starSprite[Random.Range(0, starSprite.Length)];
+            s.sortingOrder = -5;
             //s.color = color;
             newStar.transform.parent = starParent.transform;
             point.z = Random.Range(1, 11);
+            point.z -= 10;
             newStar.transform.position = point;
             newStar.transform.localScale = new Vector3(scale.x * scaleScalar, scale.y * scaleScalar, 1.0f);
 
