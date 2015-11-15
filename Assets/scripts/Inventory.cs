@@ -189,6 +189,31 @@ public class Inventory : MonoBehaviour {
     }
 
     /// <summary>
+    /// removes the specified amount of the given item from the inventory if it can, wont remove if there are not enough
+    /// </summary>
+    /// <param name="key">the item</param>
+    /// <param name="amount">the amount to remove</param>
+    /// <returns>true if there was enough to remove, false if not</returns>
+    public bool Remove(string key, int amount)
+    {
+        if (invAct.ContainsKey(key) && invAct[key] >= amount)
+        {
+            invAct[key] -= amount;
+            if (invAct[key] <= 0)
+            {
+                Vector2 pos = GetIndexAt(key);
+                inventory[(int)pos.x, (int)pos.y] = null;
+            }
+            updateInv();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
     /// moves the pointer in the inventory to the first row in the specified collumn
     /// </summary>
     /// <param name="y">to column to move the pointer to</param>
@@ -251,6 +276,27 @@ public class Inventory : MonoBehaviour {
     public int GetNumberAt(int x, int y)
     {
         return invAct[inventory[x, y]];
+    }
+
+    /// <summary>
+    /// Gets the index of an item in the inventory, returns -1,-1 if the object is not in the inventory
+    /// </summary>
+    /// <param name="key">the name of the object</param>
+    /// <returns>Vector2 x and y coordinates of the object</returns>
+    public Vector2 GetIndexAt(string key)
+    {
+        Vector2 position = new Vector2(-1, -1);
+        for (int i = 0; i < inventory.GetLength(0); i++)
+        {
+            for (int j = 0; j < inventory.GetLength(1); j++)
+            {
+                if (inventory[i, j] == key)
+                {
+                    position = new Vector2(i, j);
+                }
+            }
+        }
+        return position;
     }
 
     /// <summary>

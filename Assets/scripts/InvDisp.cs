@@ -25,7 +25,7 @@ public class InvDisp : MonoBehaviour {
     public Image[] invSImg = new Image[5];
     
     //color of selector
-    Color bkgc;
+    public Color bkgc;
 
 
 	

@@ -15,11 +15,11 @@ public class GameManager : MonoBehaviour, SaveData {
 
     public Slider PlayerHealthBar;
     public Image PlayerDamageImage;
+    public Text InfoText;
 
     ArrayList gameobjects = new ArrayList();
     Vector2 oldplayerpos;
     GameObject player;
-    public Text warning;
     int warningTime = 75;
     int curWarningTime = 0;
     GameObject[] enemy;

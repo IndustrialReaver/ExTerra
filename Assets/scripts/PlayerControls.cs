@@ -26,6 +26,7 @@ public class PlayerControls : MonoBehaviour, SaveData{
     public Vector2 inventorySize = new Vector2(5, 10);
     private Inventory inv;
     private InvDisp invD;
+    public UnityEngine.UI.Text InfoText;
 
     //DEATH
     public GameObject deathObject;
@@ -63,6 +64,7 @@ public class PlayerControls : MonoBehaviour, SaveData{
 
         healthBar = gm.PlayerHealthBar;
         damageImage = gm.PlayerDamageImage;
+        InfoText = gm.InfoText;
 
         healthBar.maxValue = maxHealth;
         healthBar.value = health;
@@ -133,6 +135,37 @@ public class PlayerControls : MonoBehaviour, SaveData{
                 }
             }
 
+
+            //BUILDZ!
+            int cost = 150;
+            if (inv.invAct["dirt_block"] >= cost
+                    && inv.invAct["water_block"] >= cost
+                    && inv.invAct["grass_block"] >= cost
+                    && inv.invAct["stone_block"] >= cost
+                    )
+            {
+                InfoText.enabled = true;
+
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    if (inv.Remove("water_block", cost) && inv.Remove("grass_block", cost) && inv.Remove("stone_block", cost) && inv.Remove("dirt_block", cost))
+                    {
+                        if (!inv.invAct.ContainsKey("space_station")) { inv.invAct.Add("space_station", 0); }
+                        inv.Add("space_station");
+                        Debug.Log("PlayerControls::CraftSpaceStation -- Crafting Succeeded!");
+                    }
+                    else
+                    {
+                        Debug.Log("PlayerControls::CraftSpaceStation -- Crafting Failed!");
+                    }
+                }
+            }
+            else
+            {
+                InfoText.enabled = false;
+            }
+
+
             //LAYZARZ
             if (Input.GetKey(KeyCode.LeftShift))
             {
@@ -199,16 +232,7 @@ public class PlayerControls : MonoBehaviour, SaveData{
             gm.destroyed(block.gameObject);
             Destroy(block.gameObject);
         }
-
-        if (inv.invAct["dirt_block"] >= 10
-                && inv.invAct["water_block"] >= 10
-                && inv.invAct["grass_block"] >= 10
-                && inv.invAct["stone_block"] >= 10
-                || inv.invAct["space_station"] < 1)
-        {
-            if (!inv.invAct.ContainsKey("space_station")) { inv.invAct.Add("space_station", 0); }
-            inv.Add("space_station");
-        }
+        
 
     }
 
